@@ -1,14 +1,26 @@
-/* eslint-disable no-unused-vars */
-import Food from 'components/food/Food'
-import React from 'react'
+import React, { useEffect } from 'react'
+import { useDispatch } from 'react-redux'
 
-import { userCollection } from 'pages/auth/registration/Registration'
+import Food from 'components/food/Food'
+import { getUser } from 'redux/feature/getRegisterUser/userSlice'
+import { getMenu } from 'redux/feature/menu/menuSlice'
+import TotalBill from 'components/total-bill/TotalBill'
+import UserCard from 'components/users/UserCard'
 
 const Home = () => {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(getUser())
+    dispatch(getMenu())
+  }, [])
+
   return (
-    <div>
+    <>
       <Food />
-    </div>
+      <UserCard />
+      <TotalBill />
+    </>
   )
 }
 
