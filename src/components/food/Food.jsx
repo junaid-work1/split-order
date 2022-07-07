@@ -18,31 +18,29 @@ const Food = () => {
   }, [])
 
   return (
-    <div>
-      <div className='row '>
-        <div className='col-6 container'>
-          <h4 className='mt-2 '>Restaurant: {restaurantData.name}</h4>
-          <table className='table table-hover'>
-            <thead>
-              <tr>
-                <th scope='col'>#</th>
-                <th scope='col'>Name</th>
-                <th scope='col'>Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {menu?.map((item, index) => {
-                return (
-                  <tr key={item.name}>
-                    <th scope='row'>{index + 1}</th>
-                    <td>{item.name}</td>
-                    <td>{item.price}</td>
-                  </tr>
-                )
-              })}
-            </tbody>
-          </table>
-        </div>
+    <div className='row '>
+      <div className='col-6 container'>
+        <h4 className='mt-2 '>Restaurant: {restaurantData.name}</h4>
+        <table className='table table-hover'>
+          <thead>
+            <tr>
+              <th scope='col'>#</th>
+              <th scope='col'>Name</th>
+              <th scope='col'>Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            {menu?.map((item, index) => {
+              return (
+                <tr key={item.name}>
+                  <th scope='row'>{index + 1}</th>
+                  <td>{item.name}</td>
+                  <td>{item.price}</td>
+                </tr>
+              )
+            })}
+          </tbody>
+        </table>
       </div>
     </div>
   )

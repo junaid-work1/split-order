@@ -1,5 +1,5 @@
-import React from 'react'
 import { Card } from 'react-bootstrap'
+import React from 'react'
 import { useSelector } from 'react-redux'
 
 const TotalBill = () => {
@@ -11,8 +11,7 @@ const TotalBill = () => {
         <Card.Body>
           <Card.Title>Total Bill</Card.Title>
           <Card.Subtitle className='mb-2 text-muted'>Rs:{totalBill}</Card.Subtitle>
-          <Card.Text>You Owe : 1000</Card.Text>
-          <Card.Link href='#'>Another Link</Card.Link>
+          <Card.Text>You Pay : {totalBill}</Card.Text>
         </Card.Body>
       </Card>
     </div>

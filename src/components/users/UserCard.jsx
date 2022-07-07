@@ -1,9 +1,10 @@
-import { Button, Card, FormLabel, Modal } from 'react-bootstrap'
+import { Button, Card, FormLabel } from 'react-bootstrap'
 import emailjs from '@emailjs/browser'
 import React, { useEffect, useRef, useState } from 'react'
 import { ToastContainer, toast } from 'react-toastify'
 import { useSelector, useDispatch } from 'react-redux'
 
+import AddUserModal from './addUser/AddUserModal'
 import { addUserData } from 'redux/feature/singleUserData/singleUserSlice'
 import { addBill } from 'redux/feature/totalBill/totalBillSlice'
 import ReminderModal from './reminder/ReminderModal'
@@ -21,6 +22,7 @@ const UserCard = () => {
   const notify = masg => toast(masg)
 
   const [show, setShow] = useState(false)
+  const [specificUser, setSpecificUser] = useState({})
   const [userData, setUserData] = useState({
     name: '',
     pizza: '',
@@ -53,6 +55,14 @@ const UserCard = () => {
     dispatch(addBill(total))
   }
 
+  const findUser = name => {
+    const [result] = user.filter(item => {
+      return item.name === name
+    })
+
+    setSpecificUser(result)
+  }
+
   const handleClose = () => setShow(false)
   const handleShow = () => setShow(true)
 
@@ -73,8 +83,21 @@ const UserCard = () => {
       userData.burger !== '' &&
       userData.sandwich !== ''
     ) {
-      dispatch(addUserData(userData))
-      setUserData({ name: '', pizza: '', burger: '', sandwich: '' })
+      const result = singleUser?.some(item => {
+        if (item.name === userData.name) {
+          return true
+        }
+        return false
+      })
+
+      if (!result) {
+        dispatch(addUserData(userData))
+        notify('Successfully added!')
+        setUserData({ name: '', pizza: '', burger: '', sandwich: '' })
+      } else {
+        notify('User Already added!')
+        setUserData({ name: '', pizza: '', burger: '', sandwich: '' })
+      }
     }
   }
 
@@ -103,7 +126,7 @@ const UserCard = () => {
       <div className='row'>
         {singleUser?.map(item => {
           return (
-            <div className='mt-2 ms-5 col-3' key={item.name}>
+            <div className=' mt-5 ms-5 col-lg-3 col-md-4 col-sm-6 col-8' key={item.name}>
               <Card>
                 <Card.Body>
                   <Card.Title>Bill Details</Card.Title>
@@ -131,6 +154,7 @@ const UserCard = () => {
                     className='ms-4 me-2'
                     onClick={() => {
                       handleVisible()
+                      findUser(item.name)
                     }}
                   >
                     Reminder
@@ -143,65 +167,22 @@ const UserCard = () => {
                 sendEmail={sendEmail}
                 handleHide={handleHide}
                 form={form}
-                data={item}
+                specificUser={specificUser}
               />
             </div>
           )
         })}
       </div>
 
-      <Modal show={show} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <label>User :</label>
-          <select name='name' value={userData.name} onChange={handleChange}>
-            <option defaultValue={'select'}>select</option>
-            {user?.map(item => {
-              return (
-                <option value={item.name} key={item.name + 1}>
-                  {item?.name}
-                </option>
-              )
-            })}
-          </select>
-        </Modal.Header>
-        <Modal.Body>
-          <ul>
-            {menu?.map(item => {
-              return (
-                <li key={item.name + 1}>
-                  <label>
-                    <div className='form-outline'>
-                      <label className='form-label'>{item?.name}</label>
-                      <input
-                        type='number'
-                        className='form-control form-control-sm'
-                        min='0'
-                        name={item.name}
-                        value={userData[item.name]}
-                        onChange={handleChange}
-                      />
-                    </div>
-                  </label>
-                </li>
-              )
-            })}
-          </ul>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button
-            variant='primary'
-            onClick={() => {
-              handleClose()
-              singleUserData()
-            }}
-          >
-            Add
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <AddUserModal
+        show={show}
+        handleClose={handleClose}
+        handleChange={handleChange}
+        singleUserData={singleUserData}
+        userData={userData}
+        user={user}
+        menu={menu}
+      />
     </>
   )
 }

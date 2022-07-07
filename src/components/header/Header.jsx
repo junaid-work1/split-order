@@ -14,10 +14,7 @@ const Header = () => {
         <Navbar.Toggle />
         <Navbar.Collapse className='justify-content-end'>
           <Navbar.Text>
-            Junaid owe: <a href='#'>Rs: 500</a>
-          </Navbar.Text>
-          <Navbar.Text className='ms-4'>
-            <a href='#'>Logout</a>
+            Junaid : <a href='#'>Logout</a>
           </Navbar.Text>
         </Navbar.Collapse>
       </Container>

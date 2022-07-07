@@ -5,13 +5,24 @@ import { useSelector } from 'react-redux'
 
 import styles from './reminder.module.css'
 
-const ReminderModal = ({ visible, sendEmail, handleHide, form, data }) => {
-  const user = useSelector(state => state.users[0])
+const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) => {
+  const singleUser = useSelector(state => state.userData)
+  const menu = useSelector(state => state.menu[0])
 
-  const billMessage = `pizza: ${data.pizza} burger: ${data.burger} sandwich: ${data.sandwich}`
-  const [mailAddress] = user.filter(item => {
-    return item.name === data.name
+  const [result] = singleUser.filter(item => {
+    return item.name === specificUser.name
   })
+
+  if (!result) return
+
+  const [sandwich, pizza, burger] = menu
+
+  const bill =
+    (pizza.price / 100) * result.pizza * 100 +
+    (burger.price / 100) * result.burger * 100 +
+    (sandwich.price / 100) * result.sandwich * 100
+
+  const billMessage = `pizza: ${result.pizza} burger: ${result.burger} sandwich: ${result.sandwich} Your Bill: ${bill}`
 
   return (
     <Modal show={visible} onHide={handleHide}>
@@ -20,15 +31,27 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, data }) => {
         <form ref={form} onSubmit={sendEmail} className={styles.reminder}>
           <div className={styles.box}>
             <label className='form-lable'>Name</label>
-            <input className='form-lable' type='text' name='name' value={data.name} />
+            <input
+              className='form-lable'
+              type='text'
+              name='name'
+              defaultValue={result.name}
+              readOnly
+            />
           </div>
           <div className={styles.box}>
             <label className='form-lable'>Email</label>
-            <input className='form-lable' type='email' name='email' value={mailAddress.email} />
+            <input
+              className='form-lable'
+              type='email'
+              name='email'
+              defaultValue={specificUser.email}
+              readOnly
+            />
           </div>
           <div className={styles.box}>
             <label className='form-lable'>Bill Detail</label>
-            <textarea name='message' value={billMessage} />
+            <textarea name='message' defaultValue={billMessage} readOnly />
           </div>
           <input className={styles.btn} type='submit' value='Send' />
         </form>
@@ -40,9 +63,9 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, data }) => {
 export default ReminderModal
 
 ReminderModal.propTypes = {
-  visible: PropTypes.bool,
-  sendEmail: PropTypes.func,
-  handleHide: PropTypes.func,
   form: PropTypes.object,
-  data: PropTypes.object
+  handleHide: PropTypes.func,
+  sendEmail: PropTypes.func,
+  specificUser: PropTypes.object,
+  visible: PropTypes.bool
 }
