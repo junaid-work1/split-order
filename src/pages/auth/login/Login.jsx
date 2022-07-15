@@ -3,17 +3,26 @@ import Joi from 'joi-browser'
 import { Link } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
 
-import { userCollection } from 'pages/auth/registration/Registration'
+import { addActiveUser } from 'redux/feature/activeUser/activeUserSlice'
 import { schema } from 'validations/schemas/loginValidation'
+import { userCollection } from 'pages/auth/registration/Registration'
 
 const Login = () => {
   const [error, setError] = useState({})
   const [email, setEmail] = useState('')
   const [flag, setFlag] = useState(false)
   const [password, setPassword] = useState('')
-  const nav = useNavigate()
   const [users, setUsers] = useState([])
+
+  const disptach = useDispatch()
+  const nav = useNavigate()
+
+  const getUser = async () => {
+    const res = await getDocs(userCollection)
+    setUsers(res.docs.map(doc => ({ ...doc.data(), id: doc.id })))
+  }
 
   const validate = () => {
     const result = Joi.validate(
@@ -36,11 +45,6 @@ const Login = () => {
     return errors
   }
 
-  const getUser = async () => {
-    const res = await getDocs(userCollection)
-    setUsers(res.docs.map(doc => ({ ...doc.data(), id: doc.id })))
-  }
-
   const loginUser = () => {
     const user = { email, password }
 
@@ -52,6 +56,8 @@ const Login = () => {
       if (element.email === user.email && element.password === user.password) {
         setEmail('')
         setPassword('')
+        disptach(addActiveUser(element))
+
         return true
       }
       return false
@@ -83,7 +89,6 @@ const Login = () => {
         />
         {error.email && <div className='alert alert-danger mt-2'>{error.email}</div>}
       </div>
-
       <div className='form-outline mb-4'>
         <label className='form-label'>Password</label>
         <input
@@ -97,14 +102,13 @@ const Login = () => {
       {flag && <p className='text-danger'> The email or password you entered is incorrect.</p>}
       <button
         type='button'
-        className='btn btn-primary btn-block mb-4'
+        className='btn btn-success btn-block mb-4'
         onClick={() => {
           loginUser()
         }}
       >
         Sign in
       </button>
-
       <div className='text-center'>
         <p>
           Not a member? <Link to='/registration'>Register</Link>

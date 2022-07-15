@@ -1,16 +1,51 @@
 import { getDocs } from 'firebase/firestore'
 import React, { useState, useEffect } from 'react'
+import styled from 'styled-components'
 import { useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
+import { addRestaurant } from 'redux/feature/restaurant/activeRestaurantSlice'
+import FoodModal from './foodModal/FoodModal'
 import { restaurantCollection } from 'pages/auth/registration/Registration'
+import RestaurantModal from './resautrantModal/RestaurantModal'
 
+const Button = styled.button`
+  color: white;
+  font-size: 1em;
+  margin: 1em;
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: 10px;
+  background: #198754;
+`
 const Food = () => {
-  const [restaurantData, setRestaurantData] = useState({})
+  const [restaurantData, setRestaurantData] = useState([])
   const menu = useSelector(state => state.menu[0])
+  const [selectedRestaurant, setSelectedRestaurant] = useState({ name: '', id: '' })
+  const [show, setShow] = useState(false)
+  const [visible, setVisible] = useState(false)
+
+  const dispatch = useDispatch()
 
   const getRestaurant = async () => {
     const res2 = await getDocs(restaurantCollection)
-    setRestaurantData(...res2.docs.map(doc => ({ ...doc.data(), id: doc.id })))
+    setRestaurantData(res2.docs.map(doc => ({ ...doc.data(), id: doc.id })))
+  }
+
+  const handleClose = () => setShow(false)
+  const handleShow = () => setShow(true)
+
+  const handleHide = () => setVisible(false)
+  const handleVisible = () => setVisible(true)
+
+  const handleChange = e => {
+    const result = restaurantData?.filter(item => {
+      if (item.name === e.target.value) {
+        return item
+      }
+    })
+    setSelectedRestaurant(...result)
+    dispatch(addRestaurant(...result))
   }
 
   useEffect(() => {
@@ -19,29 +54,51 @@ const Food = () => {
 
   return (
     <div className='row '>
-      <div className='col-6 container'>
-        <h4 className='mt-2 '>Restaurant: {restaurantData.name}</h4>
-        <table className='table table-hover'>
+      <div className='col-6 container '>
+        <div className='my-3'>
+          {!selectedRestaurant.id && <strong style={{ color: 'red' }}> Select Restaurant!</strong>}
+          <select
+            className='form-select mt-3'
+            onChange={handleChange}
+            value={selectedRestaurant.name}
+          >
+            <option defaultValue='select restaurant'>select restaurant</option>
+            {restaurantData?.map(item => {
+              return <option key={item.id}>{item?.name}</option>
+            })}
+          </select>
+        </div>
+        <h4 className='mt-2 '>{selectedRestaurant?.name}</h4>
+        <table className='table table-hover table-bordered'>
           <thead>
             <tr>
-              <th scope='col'>#</th>
               <th scope='col'>Name</th>
               <th scope='col'>Price</th>
             </tr>
           </thead>
           <tbody>
-            {menu?.map((item, index) => {
-              return (
-                <tr key={item.name}>
-                  <th scope='row'>{index + 1}</th>
-                  <td>{item.name}</td>
-                  <td>{item.price}</td>
-                </tr>
-              )
-            })}
+            {menu
+              ?.filter(item => {
+                if (selectedRestaurant.id === item.restaurantId) {
+                  return item
+                }
+              })
+              ?.map(item => {
+                return (
+                  <tr key={item.name}>
+                    {<td>{item.name}</td>}
+                    {<td>{item.price}</td>}
+                  </tr>
+                )
+              })}
           </tbody>
         </table>
+        <Button onClick={handleShow}>Add Food</Button>
+        <Button onClick={handleVisible}> Add Restaurant</Button>
       </div>
+
+      <FoodModal show={show} handleClose={handleClose} selectedRestaurant={selectedRestaurant} />
+      <RestaurantModal show={visible} handleClose={handleHide} />
     </div>
   )
 }

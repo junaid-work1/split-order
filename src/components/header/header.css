@@ -1,0 +1,23 @@
+.box-text{
+    color: white
+}
+
+.drop-down{
+    margin-right: 25px;
+}
+
+.label{
+    font-weight: bold;
+}
+
+.header-links{
+    text-decoration: none;
+}
+
+.login-btn{
+    color: white;
+}
+
+.login-btn:hover{
+    color: white;
+}

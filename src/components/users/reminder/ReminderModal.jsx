@@ -6,8 +6,10 @@ import { useSelector } from 'react-redux'
 import styles from './reminder.module.css'
 
 const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) => {
-  const singleUser = useSelector(state => state.userData)
   const menu = useSelector(state => state.menu[0])
+  const singleUser = useSelector(state => state.userData)
+
+  let billMessage = []
 
   const [result] = singleUser.filter(item => {
     return item.name === specificUser.name
@@ -15,14 +17,22 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
 
   if (!result) return
 
-  const [sandwich, pizza, burger] = menu
+  const bill = menu?.reduce((subTotal, obj) => {
+    let sum = 0
+    for (const [key, value] of Object.entries(result)) {
+      if (key !== 'name') {
+        if (key === obj.name) {
+          sum = (obj.price / 100) * (value || 0) * 100
+          return subTotal + sum
+        }
+      }
+    }
+    return subTotal
+  }, 0)
 
-  const bill =
-    (pizza.price / 100) * result.pizza * 100 +
-    (burger.price / 100) * result.burger * 100 +
-    (sandwich.price / 100) * result.sandwich * 100
-
-  const billMessage = `pizza: ${result.pizza} burger: ${result.burger} sandwich: ${result.sandwich} Your Bill: ${bill}`
+  for (const [key, value] of Object.entries(result)) {
+    billMessage.push(`${key} : ${value}  `)
+  }
 
   return (
     <Modal show={visible} onHide={handleHide}>
@@ -51,7 +61,11 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
           </div>
           <div className={styles.box}>
             <label className='form-lable'>Bill Detail</label>
-            <textarea name='message' defaultValue={billMessage} readOnly />
+            <textarea
+              name='message'
+              defaultValue={`${billMessage} \n Your bill: ${bill}`}
+              readOnly
+            />
           </div>
           <input className={styles.btn} type='submit' value='Send' />
         </form>
@@ -63,8 +77,8 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
 export default ReminderModal
 
 ReminderModal.propTypes = {
-  form: PropTypes.object,
   handleHide: PropTypes.func,
+  form: PropTypes.object,
   sendEmail: PropTypes.func,
   specificUser: PropTypes.object,
   visible: PropTypes.bool

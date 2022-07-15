@@ -1,26 +1,37 @@
 import { collection, addDoc } from 'firebase/firestore'
+import { db } from 'firestoreConfig'
 import Joi from 'joi-browser'
 import React, { useState } from 'react'
 import { Outlet, Link } from 'react-router-dom'
 import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 
-import { db } from 'firestoreConfig'
 import { schema } from 'validations/schemas/registrationValidation'
+import Input from 'components/elements/input/Input'
+
+import 'react-toastify/dist/ReactToastify.css'
 
 export const userCollection = collection(db, 'users')
 export const menuCollection = collection(db, 'menu')
 export const restaurantCollection = collection(db, 'restaurant')
+
 const Registration = () => {
   const [error, setError] = useState({})
   const [flag, setFlag] = useState(false)
-  const notify = () => toast('Successfull user created!')
   const [registrationData, setRegistrationData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: ''
   })
+
+  const inputList = [
+    { value: registrationData.name, name: 'name', type: 'text' },
+    { value: registrationData.email, name: 'email', type: 'email' },
+    { value: registrationData.password, name: 'password', type: 'password' },
+    { value: registrationData.confirmPassword, name: 'confirmPassword', type: 'password' }
+  ]
+
+  const notify = () => toast('Successfull user created!')
 
   const validate = () => {
     const result = Joi.validate(
@@ -53,7 +64,8 @@ const Registration = () => {
   }
 
   const registerUser = async () => {
-    const user = { ...registrationData, isAdmin: Boolean(false) }
+    const { name, email, password } = registrationData
+    const user = { name, email, password, isAdmin: Boolean(false) }
     const errors = validate()
     setError(errors || {})
     if (errors) return
@@ -76,56 +88,23 @@ const Registration = () => {
     <div className='row'>
       <div className='mt-5 p-5 mt-5 p-5 col-lg-4 col-md-6 col-sm-7 container shadow-lg bg-body rounded'>
         <div className='form-outline mb-4'>
-          <label className='form-label'>Name</label>
-          <input
-            type='email'
-            className='form-control '
-            name='name'
-            value={registrationData.name}
-            onChange={handleChange}
-          />
-          {error.name && <p className='text-danger'>{error.name}</p>}
-        </div>
-        <div className='form-outline mb-4'>
-          <label className='form-label'>Email address</label>
-          <input
-            type='email'
-            className='form-control'
-            name='email'
-            value={registrationData.email}
-            onChange={handleChange}
-          />
-          {error.email && <p className='text-danger'>{error.email}</p>}
-        </div>
-
-        <div className='form-outline mb-4'>
-          <label className='form-label'>Password</label>
-          <input
-            type='password'
-            className='form-control'
-            name='password'
-            value={registrationData.password}
-            onChange={handleChange}
-          />
-          {error.password && <p className='text-danger'>{error.password}</p>}
-        </div>
-
-        <div className='form-outline mb-4'>
-          <label className='form-label'>Confirm Password</label>
-          <input
-            type='password'
-            className='form-control'
-            name='confirmPassword'
-            value={registrationData.confirmPassword}
-            onChange={handleChange}
-          />
-          {error.confirmPassword && <p className='text-danger'>{error.confirmPassword}</p>}
+          {inputList.map(item => {
+            return (
+              <Input
+                type={item.type}
+                name={item.name}
+                handleChange={handleChange}
+                value={item.value}
+                error={error}
+                key={item.name}
+              />
+            )
+          })}
           {flag && <p className='text-danger'> Please make sure your passwords match</p>}
         </div>
-
         <button
           type='button'
-          className='btn btn-primary btn-block mb-4'
+          className='btn btn-success btn-block mb-4'
           onClick={() => {
             registerUser()
           }}

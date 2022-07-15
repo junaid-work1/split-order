@@ -13,45 +13,56 @@ import 'react-toastify/dist/ReactToastify.css'
 import 'react-responsive-modal/styles.css'
 
 const UserCard = () => {
+  const [show, setShow] = useState(false)
+  const [specificUser, setSpecificUser] = useState({})
+  const [userData, setUserData] = useState({})
+  const [visible, setVisible] = useState(false)
+
+  const form = useRef()
+
   const menu = useSelector(state => state.menu[0])
   const singleUser = useSelector(state => state.userData)
   const user = useSelector(state => state.users[0])
 
   const dispatch = useDispatch()
-  const form = useRef()
   const notify = masg => toast(masg)
 
-  const [show, setShow] = useState(false)
-  const [specificUser, setSpecificUser] = useState({})
-  const [userData, setUserData] = useState({
-    name: '',
-    pizza: '',
-    burger: '',
-    sandwich: ''
-  })
-  const [visible, setVisible] = useState(false)
-
   const calculateBill = item => {
-    const [sandwich, pizza, burger] = menu
-    let bill =
-      (pizza.price / 100) * item.pizza * 100 +
-      (burger.price / 100) * item.burger * 100 +
-      (sandwich.price / 100) * item.sandwich * 100
+    const bill = menu?.reduce((subTotal, obj) => {
+      let sum = 0
+      for (const [key, value] of Object.entries(item)) {
+        if (key !== 'name') {
+          if (key === obj.name) {
+            sum = (obj.price / 100) * (value || 0) * 100
+            return subTotal + sum
+          }
+        }
+      }
+      return subTotal
+    }, 0)
+
     return bill
   }
 
   const calculateTotalBill = () => {
     if (!menu) return
-    const [sandwich, pizza, burger] = menu
 
-    const total = singleUser?.reduce((acc, obj) => {
-      return (
-        acc +
-        (pizza.price / 100) * obj.pizza * 100 +
-        (burger.price / 100) * obj.burger * 100 +
-        (sandwich.price / 100) * obj.sandwich * 100
-      )
+    const total = menu?.reduce((allTotal, obj) => {
+      const sum = singleUser?.reduce((sum, item) => {
+        let bills = 0
+        for (const [key, value] of Object.entries(item)) {
+          if (key !== 'name') {
+            if (key === obj.name) {
+              bills = (obj.price / 100) * (value || 0) * 100
+              return sum + bills
+            }
+          }
+        }
+        return sum
+      }, 0)
+      return allTotal + sum
     }, 0)
+
     dispatch(addBill(total))
   }
 
@@ -69,35 +80,20 @@ const UserCard = () => {
   const handleHide = () => setVisible(false)
   const handleVisible = () => setVisible(true)
 
-  const handleChange = e => {
-    setUserData({
-      ...userData,
-      [e.target.name]: e.target.value.trim()
-    })
-  }
-
   const singleUserData = () => {
-    if (
-      userData.name !== '' &&
-      userData.pizza !== '' &&
-      userData.burger !== '' &&
-      userData.sandwich !== ''
-    ) {
-      const result = singleUser?.some(item => {
-        if (item.name === userData.name) {
-          return true
-        }
-        return false
-      })
-
-      if (!result) {
-        dispatch(addUserData(userData))
-        notify('Successfully added!')
-        setUserData({ name: '', pizza: '', burger: '', sandwich: '' })
-      } else {
-        notify('User Already added!')
-        setUserData({ name: '', pizza: '', burger: '', sandwich: '' })
+    const result = singleUser?.some(item => {
+      if (item.name === userData.name) {
+        return true
       }
+      return false
+    })
+    if (!result) {
+      dispatch(addUserData(userData))
+      notify('Successfully added!')
+      setUserData({})
+    } else {
+      notify('User Already added!')
+      setUserData({})
     }
   }
 
@@ -120,9 +116,18 @@ const UserCard = () => {
 
   return (
     <>
-      <Button variant='primary' className='ms-5' onClick={handleShow}>
-        Add User
+      <Button
+        variant='success'
+        className='ms-3 mt-3'
+        onClick={() => {
+          handleShow()
+        }}
+      >
+        Add User & Food
       </Button>
+      <div className='col-4 container'>
+        {singleUser.length === 0 && <strong>Add Order Details!</strong>}
+      </div>
       <div className='row'>
         {singleUser?.map(item => {
           return (
@@ -149,9 +154,11 @@ const UserCard = () => {
                     </tbody>
                   </table>
                   <hr />
+
                   <FormLabel className='ms-2 me-4'>Total: {calculateBill(item)}</FormLabel>
                   <Button
                     className='ms-4 me-2'
+                    variant='success'
                     onClick={() => {
                       handleVisible()
                       findUser(item.name)
@@ -173,13 +180,12 @@ const UserCard = () => {
           )
         })}
       </div>
-
       <AddUserModal
         show={show}
         handleClose={handleClose}
-        handleChange={handleChange}
         singleUserData={singleUserData}
         userData={userData}
+        setUserData={setUserData}
         user={user}
         menu={menu}
       />
