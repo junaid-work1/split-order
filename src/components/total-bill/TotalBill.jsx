@@ -17,9 +17,9 @@ const TotalBill = () => {
             return (
               <Card.Text key={item.name}>
                 {item.name !== 'Junaid' && (
-                  <>
+                  <strong>
                     {item.name} owes to junaid : {item.bill}
-                  </>
+                  </strong>
                 )}
               </Card.Text>
             )

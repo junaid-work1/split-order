@@ -24,6 +24,17 @@ const Header = () => {
   const activeUser = useSelector(state => state.activeUser)
   const disptach = useDispatch()
 
+  const activeUserName = (
+    <MDBDropdownToggle nav caret className='navbar-text drop-down'>
+      <div className='d-none d-md-inline box-text label'>{activeUser?.name}</div>
+    </MDBDropdownToggle>
+  )
+
+  const loginTag = (
+    <Link to='login' className='header-links login-btn label'>
+      Login
+    </Link>
+  )
   const delActiveUser = () => {
     disptach(addActiveUser({}))
   }
@@ -65,15 +76,7 @@ const Header = () => {
 
             <MDBNavbarLink>
               <MDBDropdown>
-                {activeUser.name ? (
-                  <MDBDropdownToggle nav caret className='navbar-text drop-down'>
-                    <div className='d-none d-md-inline box-text label'>{activeUser?.name}</div>
-                  </MDBDropdownToggle>
-                ) : (
-                  <Link to='login' className='header-links login-btn label'>
-                    Login
-                  </Link>
-                )}
+                {activeUser.name ? activeUserName : loginTag}
                 <MDBDropdownMenu className='dropdown-default '>
                   <Link to='profile' className='header-links'>
                     <MDBDropdownItem>Profile</MDBDropdownItem>

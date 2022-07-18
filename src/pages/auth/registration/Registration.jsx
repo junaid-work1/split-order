@@ -88,18 +88,16 @@ const Registration = () => {
     <div className='row'>
       <div className='mt-5 p-5 mt-5 p-5 col-lg-4 col-md-6 col-sm-7 container shadow-lg bg-body rounded'>
         <div className='form-outline mb-4'>
-          {inputList.map(item => {
-            return (
-              <Input
-                type={item.type}
-                name={item.name}
-                handleChange={handleChange}
-                value={item.value}
-                error={error}
-                key={item.name}
-              />
-            )
-          })}
+          {inputList.map(item => (
+            <Input
+              type={item.type}
+              name={item.name}
+              handleChange={handleChange}
+              value={item.value}
+              error={error}
+              key={item.name}
+            />
+          ))}
           {flag && <p className='text-danger'> Please make sure your passwords match</p>}
         </div>
         <button

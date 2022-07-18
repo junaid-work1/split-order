@@ -46,14 +46,12 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
       <Modal.Body>
         <form ref={form} onSubmit={sendEmail} className={styles.reminder}>
           <div className={styles.box}>
-            {inputList.map(item => {
-              return (
-                <>
-                  <label className='form-lable'>{item.name}</label>
-                  <FormInput type={item.type} name={item.name} defaultValue={item.defaultValue} />
-                </>
-              )
-            })}
+            {inputList.map(item => (
+              <>
+                <label className='form-lable'>{item.name}</label>
+                <FormInput type={item.type} name={item.name} defaultValue={item.defaultValue} />
+              </>
+            ))}
           </div>
           <div className={styles.box}>
             <label className='form-lable'>Bill Detail</label>

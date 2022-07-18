@@ -28,17 +28,18 @@ const Food = () => {
   const menu = useSelector(state => state.menu)
   const dispatch = useDispatch()
 
+  const buttons = (
+    <>
+      <Button onClick={() => setShow(true)}>Add Food</Button>
+      <Link to='usercard'>
+        <Button> Split Bill</Button>
+      </Link>
+    </>
+  )
   const getRestaurant = async () => {
     const res2 = await getDocs(restaurantCollection)
     setRestaurantData(res2.docs.map(doc => ({ ...doc.data(), id: doc.id })))
   }
-
-  const handleClose = () => setShow(false)
-
-  const handleShow = () => setShow(true)
-
-  const handleHide = () => setVisible(false)
-  const handleVisible = () => setVisible(true)
 
   const handleChange = e => {
     const result = restaurantData?.filter(item => {
@@ -100,18 +101,19 @@ const Food = () => {
               })}
           </tbody>
         </table>
-        <Button onClick={handleVisible}> Add Restaurant</Button>
-        {selectedRestaurant.id && (
-          <>
-            <Button onClick={handleShow}>Add Food</Button>
-            <Link to='usercard'>
-              <Button> Split Bill</Button>
-            </Link>
-          </>
-        )}
+        <Button onClick={() => setVisible(true)}> Add Restaurant</Button>
+        {selectedRestaurant.id && buttons}
       </div>
-      <FoodModal show={show} handleClose={handleClose} selectedRestaurant={selectedRestaurant} />
-      <RestaurantModal show={visible} handleClose={handleHide} getRestaurant={getRestaurant} />
+      <FoodModal
+        show={show}
+        handleClose={() => setShow(false)}
+        selectedRestaurant={selectedRestaurant}
+      />
+      <RestaurantModal
+        show={visible}
+        handleClose={() => setVisible(false)}
+        getRestaurant={getRestaurant}
+      />
     </div>
   )
 }

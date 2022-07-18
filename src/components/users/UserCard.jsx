@@ -74,10 +74,6 @@ const UserCard = () => {
     setSpecificUser(result)
   }
 
-  const handleClose = () => setShow(false)
-  const handleShow = () => setShow(true)
-
-  const handleHide = () => setVisible(false)
   const handleVisible = () => setVisible(true)
 
   const singleUserData = () => {
@@ -104,9 +100,7 @@ const UserCard = () => {
       () => {
         notify('Email is sent successfully!')
       },
-      error => {
-        notify(error.text)
-      }
+      error => notify(error.text)
     )
   }
 
@@ -116,13 +110,7 @@ const UserCard = () => {
 
   return (
     <>
-      <Button
-        variant='success'
-        className='ms-3 mt-3'
-        onClick={() => {
-          handleShow()
-        }}
-      >
+      <Button variant='success' className='ms-3 mt-3' onClick={() => setShow(true)}>
         Add User & Food
       </Button>
       <div className='col-4 container'>
@@ -143,14 +131,12 @@ const UserCard = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {Object.entries(item)?.map(([name, value]) => {
-                        return (
-                          <tr key={name}>
-                            <td>{name}</td>
-                            <td>{value}</td>
-                          </tr>
-                        )
-                      })}
+                      {Object.entries(item)?.map(([name, value]) => (
+                        <tr key={name}>
+                          <td>{name}</td>
+                          <td>{value}</td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                   <hr />
@@ -172,7 +158,7 @@ const UserCard = () => {
               <ReminderModal
                 visible={visible}
                 sendEmail={sendEmail}
-                handleHide={handleHide}
+                handleHide={() => setVisible(false)}
                 form={form}
                 specificUser={specificUser}
               />
@@ -182,7 +168,7 @@ const UserCard = () => {
       </div>
       <AddUserModal
         show={show}
-        handleClose={handleClose}
+        handleClose={() => setShow(false)}
         singleUserData={singleUserData}
         userData={userData}
         setUserData={setUserData}

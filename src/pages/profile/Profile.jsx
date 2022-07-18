@@ -25,9 +25,9 @@ const Profile = () => {
               return (
                 <Card.Text key={item.name}>
                   {item.name !== 'Junaid' && (
-                    <>
+                    <strong>
                       {item.name} owes Junaid : {item.bill}
-                    </>
+                    </strong>
                   )}
                 </Card.Text>
               )
