@@ -97,9 +97,7 @@ const UserCard = () => {
     e.preventDefault()
     handleHide()
     emailjs.sendForm('service_2uwgcxa', 'template_hzah24o', form.current, '5Hq4RD_4RiUF9I990').then(
-      () => {
-        notify('Email is sent successfully!')
-      },
+      () => notify('Email is sent successfully!'),
       error => notify(error.text)
     )
   }
