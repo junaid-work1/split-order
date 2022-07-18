@@ -12,14 +12,21 @@ import {
   MDBCollapse
 } from 'mdb-react-ui-kit'
 import { MDBDropdown, MDBDropdownItem, MDBDropdownMenu, MDBDropdownToggle } from 'mdbreact'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { addActiveUser } from 'redux/feature/activeUser/activeUserSlice'
 
 import './header.css'
 
 const Header = () => {
   const [showNavText, setShowNavText] = useState(false)
-  const activeUser = useSelector(state => state.activeUser)
 
+  const activeUser = useSelector(state => state.activeUser)
+  const disptach = useDispatch()
+
+  const delActiveUser = () => {
+    disptach(addActiveUser({}))
+  }
   return (
     <div className='row '>
       <MDBNavbar expand='lg' dark bgColor='success'>
@@ -39,7 +46,7 @@ const Header = () => {
             <MDBNavbarNav className='mr-auto mb-2 mb-lg-0'>
               <MDBNavbarItem>
                 <Link to='/' className='header-links'>
-                  <MDBNavbarLink to='/' className='label' active aria-current='page'>
+                  <MDBNavbarLink className='label' active aria-current='page'>
                     Home
                   </MDBNavbarLink>
                 </Link>
@@ -72,7 +79,7 @@ const Header = () => {
                     <MDBDropdownItem>Profile</MDBDropdownItem>
                   </Link>
                   <Link to='login' className='header-links'>
-                    <MDBDropdownItem>Logout</MDBDropdownItem>
+                    <MDBDropdownItem onClick={delActiveUser}>Logout</MDBDropdownItem>
                   </Link>
                 </MDBDropdownMenu>
               </MDBDropdown>

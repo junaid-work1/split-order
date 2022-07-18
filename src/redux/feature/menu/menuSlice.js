@@ -13,7 +13,7 @@ export const menuSlice = createSlice({
   reducers: {},
   extraReducers: builder => {
     builder.addCase(getMenu.fulfilled, (state, action) => {
-      state.push(action.payload)
+      return (state = action.payload)
     })
   }
 })

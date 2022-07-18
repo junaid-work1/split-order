@@ -9,6 +9,7 @@ import UserCard from 'components/users/UserCard'
 import Profile from 'pages/profile/Profile'
 import TotalBill from 'components/total-bill/TotalBill'
 import { useSelector } from 'react-redux'
+import NoPage from 'pages/noPage/NoPage'
 
 const route = [
   { path: '/', element: <Home /> },
@@ -27,6 +28,7 @@ const AllRoutes = () => {
         <Header />
         {!activeUser.name ? (
           <Routes>
+            <Route path='*' element={<NoPage />} />
             <Route path='login' element={<Login />} />
             <Route path='registration' element={<Registration />} />
           </Routes>

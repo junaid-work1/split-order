@@ -4,18 +4,23 @@ import { db } from 'firestoreConfig'
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { toast, ToastContainer } from 'react-toastify'
+import { useDispatch } from 'react-redux'
+
+import { getMenu } from 'redux/feature/menu/menuSlice'
 
 const menuCollection = collection(db, 'menu')
 
 const FoodModal = ({ handleClose, show, selectedRestaurant }) => {
   const [menuData, setMenuData] = useState({ name: '', price: 0 })
-
   const notify = masg => toast(masg)
+
+  const dispatch = useDispatch()
 
   const addMenuItem = async () => {
     const { name, price } = menuData
     const data = { name: name, price: Number(price), restaurantId: selectedRestaurant.id }
     await addDoc(menuCollection, data)
+    dispatch(getMenu())
     notify('Successfully Added!')
   }
 

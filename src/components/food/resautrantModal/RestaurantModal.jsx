@@ -7,13 +7,14 @@ import { toast, ToastContainer } from 'react-toastify'
 
 const restaurantCollection = collection(db, 'restaurant')
 
-const RestaurantModal = ({ handleClose, show }) => {
+const RestaurantModal = ({ handleClose, show, getRestaurant }) => {
   const [restaurant, setRestaurant] = useState({ name: '' })
 
   const notify = masg => toast(masg)
 
   const addRestaurant = async () => {
     await addDoc(restaurantCollection, restaurant)
+    getRestaurant()
     notify('Successfully Added!')
   }
 
@@ -57,5 +58,6 @@ export default RestaurantModal
 
 RestaurantModal.propTypes = {
   handleClose: PropTypes.func,
+  getRestaurant: PropTypes.func,
   show: PropTypes.bool
 }

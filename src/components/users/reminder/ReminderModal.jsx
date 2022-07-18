@@ -3,10 +3,12 @@ import { Modal } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
 
+import FormInput from 'components/elements/input/FormInput'
+
 import styles from './reminder.module.css'
 
 const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) => {
-  const menu = useSelector(state => state.menu[0])
+  const menu = useSelector(state => state.menu)
   const singleUser = useSelector(state => state.userData)
 
   let billMessage = []
@@ -17,6 +19,10 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
 
   if (!result) return
 
+  const inputList = [
+    { defaultValue: result.name, name: 'name', type: 'text' },
+    { defaultValue: specificUser.email, name: 'email', type: 'email' }
+  ]
   const bill = menu?.reduce((subTotal, obj) => {
     let sum = 0
     for (const [key, value] of Object.entries(result)) {
@@ -40,24 +46,14 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
       <Modal.Body>
         <form ref={form} onSubmit={sendEmail} className={styles.reminder}>
           <div className={styles.box}>
-            <label className='form-lable'>Name</label>
-            <input
-              className='form-lable'
-              type='text'
-              name='name'
-              defaultValue={result.name}
-              readOnly
-            />
-          </div>
-          <div className={styles.box}>
-            <label className='form-lable'>Email</label>
-            <input
-              className='form-lable'
-              type='email'
-              name='email'
-              defaultValue={specificUser.email}
-              readOnly
-            />
+            {inputList.map(item => {
+              return (
+                <>
+                  <label className='form-lable'>{item.name}</label>
+                  <FormInput type={item.type} name={item.name} defaultValue={item.defaultValue} />
+                </>
+              )
+            })}
           </div>
           <div className={styles.box}>
             <label className='form-lable'>Bill Detail</label>

@@ -1,8 +1,8 @@
 import { getDocs } from 'firebase/firestore'
+import { Link } from 'react-router-dom'
 import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { useSelector } from 'react-redux'
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 
 import { addRestaurant } from 'redux/feature/restaurant/activeRestaurantSlice'
 import FoodModal from './foodModal/FoodModal'
@@ -19,12 +19,13 @@ const Button = styled.button`
   background: #198754;
 `
 const Food = () => {
+  const [flag, setFlag] = useState(false)
   const [restaurantData, setRestaurantData] = useState([])
-  const menu = useSelector(state => state.menu[0])
   const [selectedRestaurant, setSelectedRestaurant] = useState({ name: '', id: '' })
   const [show, setShow] = useState(false)
   const [visible, setVisible] = useState(false)
 
+  const menu = useSelector(state => state.menu)
   const dispatch = useDispatch()
 
   const getRestaurant = async () => {
@@ -33,6 +34,7 @@ const Food = () => {
   }
 
   const handleClose = () => setShow(false)
+
   const handleShow = () => setShow(true)
 
   const handleHide = () => setVisible(false)
@@ -46,6 +48,7 @@ const Food = () => {
     })
     setSelectedRestaurant(...result)
     dispatch(addRestaurant(...result))
+    setFlag(true)
   }
 
   useEffect(() => {
@@ -62,7 +65,9 @@ const Food = () => {
             onChange={handleChange}
             value={selectedRestaurant.name}
           >
-            <option defaultValue='select restaurant'>select restaurant</option>
+            <option defaultValue disabled={flag}>
+              select restaurant
+            </option>
             {restaurantData?.map(item => {
               return <option key={item.id}>{item?.name}</option>
             })}
@@ -70,12 +75,14 @@ const Food = () => {
         </div>
         <h4 className='mt-2 '>{selectedRestaurant?.name}</h4>
         <table className='table table-hover table-bordered'>
-          <thead>
-            <tr>
-              <th scope='col'>Name</th>
-              <th scope='col'>Price</th>
-            </tr>
-          </thead>
+          {selectedRestaurant.id && (
+            <thead>
+              <tr>
+                <th scope='col'>Name</th>
+                <th scope='col'>Price</th>
+              </tr>
+            </thead>
+          )}
           <tbody>
             {menu
               ?.filter(item => {
@@ -93,12 +100,18 @@ const Food = () => {
               })}
           </tbody>
         </table>
-        <Button onClick={handleShow}>Add Food</Button>
         <Button onClick={handleVisible}> Add Restaurant</Button>
+        {selectedRestaurant.id && (
+          <>
+            <Button onClick={handleShow}>Add Food</Button>
+            <Link to='usercard'>
+              <Button> Split Bill</Button>
+            </Link>
+          </>
+        )}
       </div>
-
       <FoodModal show={show} handleClose={handleClose} selectedRestaurant={selectedRestaurant} />
-      <RestaurantModal show={visible} handleClose={handleHide} />
+      <RestaurantModal show={visible} handleClose={handleHide} getRestaurant={getRestaurant} />
     </div>
   )
 }

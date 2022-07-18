@@ -16,7 +16,11 @@ const TotalBill = () => {
           {bill?.map(item => {
             return (
               <Card.Text key={item.name}>
-                {item.name} owes you : {item.bill}
+                {item.name !== 'Junaid' && (
+                  <>
+                    {item.name} owes to junaid : {item.bill}
+                  </>
+                )}
               </Card.Text>
             )
           })}

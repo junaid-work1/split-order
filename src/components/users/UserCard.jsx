@@ -20,9 +20,9 @@ const UserCard = () => {
 
   const form = useRef()
 
-  const menu = useSelector(state => state.menu[0])
+  const menu = useSelector(state => state.menu)
   const singleUser = useSelector(state => state.userData)
-  const user = useSelector(state => state.users[0])
+  const user = useSelector(state => state.users)
 
   const dispatch = useDispatch()
   const notify = masg => toast(masg)
