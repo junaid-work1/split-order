@@ -52,20 +52,22 @@ const Login = () => {
     setError(errors || {})
     if (errors) return
 
-    const result = users.some(element => {
+    const [result] = users.filter(element => {
       if (element.email === user.email && element.password === user.password) {
         setEmail('')
         setPassword('')
         disptach(addActiveUser(element))
 
-        return true
+        return element
       }
-      return false
     })
 
-    if (result) {
+    if (result.isAdmin === true) {
       nav('/')
+    } else {
+      nav('/profile')
     }
+
     if (!result) {
       setFlag(true)
     }

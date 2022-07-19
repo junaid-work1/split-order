@@ -7,12 +7,17 @@ import { ToastContainer, toast } from 'react-toastify'
 
 import { schema } from 'validations/schemas/registrationValidation'
 import Input from 'components/elements/input/Input'
+import {
+  MENU_COLLECTION,
+  RESTAURANT_COLLECTION,
+  USER_COLLECTION
+} from 'firestoreCollections/constants'
 
 import 'react-toastify/dist/ReactToastify.css'
 
-export const userCollection = collection(db, 'users')
-export const menuCollection = collection(db, 'menu')
-export const restaurantCollection = collection(db, 'restaurant')
+export const userCollection = collection(db, USER_COLLECTION)
+export const restaurantCollection = collection(db, RESTAURANT_COLLECTION)
+export const menuCollection = collection(db, MENU_COLLECTION)
 
 const Registration = () => {
   const [error, setError] = useState({})
@@ -57,9 +62,10 @@ const Registration = () => {
   }
 
   const handleChange = e => {
+    const { name, value } = e.target
     setRegistrationData({
       ...registrationData,
-      [e.target.name]: e.target.value.trim()
+      [name]: value.trim()
     })
   }
 

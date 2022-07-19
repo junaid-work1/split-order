@@ -1,4 +1,3 @@
-import React from 'react'
 import { Modal } from 'react-bootstrap'
 import PropTypes from 'prop-types'
 import { useSelector } from 'react-redux'
@@ -13,9 +12,7 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
 
   let billMessage = []
 
-  const [result] = singleUser.filter(item => {
-    return item.name === specificUser.name
-  })
+  const [result] = singleUser.filter(item => item.name === specificUser.name)
 
   if (!result) return
 
@@ -23,13 +20,12 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
     { defaultValue: result.name, name: 'name', type: 'text' },
     { defaultValue: specificUser.email, name: 'email', type: 'email' }
   ]
+
   const bill = menu?.reduce((subTotal, obj) => {
-    let sum = 0
     for (const [key, value] of Object.entries(result)) {
       if (key !== 'name') {
         if (key === obj.name) {
-          sum = (obj.price / 100) * (value || 0) * 100
-          return subTotal + sum
+          return subTotal + (obj.price / 100) * (value || 0) * 100
         }
       }
     }
@@ -48,7 +44,9 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
           <div className={styles.box}>
             {inputList.map(item => (
               <>
-                <label className='form-lable'>{item.name}</label>
+                <label className='form-lable' htmlFor={name}>
+                  {item.name}
+                </label>
                 <FormInput type={item.type} name={item.name} defaultValue={item.defaultValue} />
               </>
             ))}

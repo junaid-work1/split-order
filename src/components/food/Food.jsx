@@ -1,7 +1,7 @@
 import { getDocs } from 'firebase/firestore'
 import { Link } from 'react-router-dom'
-import React, { useState, useEffect } from 'react'
 import styled from 'styled-components'
+import { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { addRestaurant } from 'redux/feature/restaurant/activeRestaurantSlice'
@@ -36,17 +36,19 @@ const Food = () => {
       </Link>
     </>
   )
+
   const getRestaurant = async () => {
     const res2 = await getDocs(restaurantCollection)
     setRestaurantData(res2.docs.map(doc => ({ ...doc.data(), id: doc.id })))
   }
 
+  const handleClose = () => setShow(false)
+
+  const handleVisible = () => setVisible(true)
+  const handleHide = () => setVisible(false)
+
   const handleChange = e => {
-    const result = restaurantData?.filter(item => {
-      if (item.name === e.target.value) {
-        return item
-      }
-    })
+    const result = restaurantData?.filter(item => item.name === e.target.value && item)
     setSelectedRestaurant(...result)
     dispatch(addRestaurant(...result))
     setFlag(true)
@@ -60,7 +62,7 @@ const Food = () => {
     <div className='row '>
       <div className='col-6 container '>
         <div className='my-3'>
-          {!selectedRestaurant.id && <strong style={{ color: 'red' }}> Select Restaurant!</strong>}
+          {!selectedRestaurant.id && <strong className='text-danger'> Select Restaurant!</strong>}
           <select
             className='form-select mt-3'
             onChange={handleChange}
@@ -69,9 +71,9 @@ const Food = () => {
             <option defaultValue disabled={flag}>
               select restaurant
             </option>
-            {restaurantData?.map(item => {
-              return <option key={item.id}>{item?.name}</option>
-            })}
+            {restaurantData?.map(item => (
+              <option key={item.id}>{item?.name}</option>
+            ))}
           </select>
         </div>
         <h4 className='mt-2 '>{selectedRestaurant?.name}</h4>
@@ -86,34 +88,20 @@ const Food = () => {
           )}
           <tbody>
             {menu
-              ?.filter(item => {
-                if (selectedRestaurant.id === item.restaurantId) {
-                  return item
-                }
-              })
-              ?.map(item => {
-                return (
-                  <tr key={item.name}>
-                    {<td>{item.name}</td>}
-                    {<td>{item.price}</td>}
-                  </tr>
-                )
-              })}
+              ?.filter(item => selectedRestaurant.id === item.restaurantId)
+              ?.map(menuItem => (
+                <tr key={menuItem.name}>
+                  {<td>{menuItem.name}</td>}
+                  {<td>{menuItem.price}</td>}
+                </tr>
+              ))}
           </tbody>
         </table>
-        <Button onClick={() => setVisible(true)}> Add Restaurant</Button>
+        <Button onClick={handleVisible}> Add Restaurant</Button>
         {selectedRestaurant.id && buttons}
       </div>
-      <FoodModal
-        show={show}
-        handleClose={() => setShow(false)}
-        selectedRestaurant={selectedRestaurant}
-      />
-      <RestaurantModal
-        show={visible}
-        handleClose={() => setVisible(false)}
-        getRestaurant={getRestaurant}
-      />
+      <FoodModal show={show} handleClose={handleClose} selectedRestaurant={selectedRestaurant} />
+      <RestaurantModal show={visible} handleClose={handleHide} getRestaurant={getRestaurant} />
     </div>
   )
 }

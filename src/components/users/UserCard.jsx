@@ -1,7 +1,7 @@
 import { Button, Card, FormLabel } from 'react-bootstrap'
 import emailjs from '@emailjs/browser'
-import React, { useEffect, useRef, useState } from 'react'
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
+import { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import AddUserModal from './addUser/AddUserModal'
@@ -28,20 +28,16 @@ const UserCard = () => {
   const notify = masg => toast(masg)
 
   const calculateBill = item => {
-    const bill = menu?.reduce((subTotal, obj) => {
-      let sum = 0
+    return menu?.reduce((subTotal, obj) => {
       for (const [key, value] of Object.entries(item)) {
         if (key !== 'name') {
           if (key === obj.name) {
-            sum = (obj.price / 100) * (value || 0) * 100
-            return subTotal + sum
+            return subTotal + (obj.price / 100) * (value || 0) * 100
           }
         }
       }
       return subTotal
     }, 0)
-
-    return bill
   }
 
   const calculateTotalBill = () => {
@@ -49,12 +45,10 @@ const UserCard = () => {
 
     const total = menu?.reduce((allTotal, obj) => {
       const sum = singleUser?.reduce((sum, item) => {
-        let bills = 0
         for (const [key, value] of Object.entries(item)) {
           if (key !== 'name') {
             if (key === obj.name) {
-              bills = (obj.price / 100) * (value || 0) * 100
-              return sum + bills
+              return sum + (obj.price / 100) * (value || 0) * 100
             }
           }
         }
@@ -67,26 +61,25 @@ const UserCard = () => {
   }
 
   const findUser = name => {
-    const [result] = user.filter(item => {
-      return item.name === name
-    })
-
+    const [result] = user.filter(item => item.name === name)
     setSpecificUser(result)
   }
 
+  const handleShow = () => setShow(true)
+  const handleClose = () => setShow(false)
+
   const handleVisible = () => setVisible(true)
+  const handleHide = () => setVisible(false)
 
   const singleUserData = () => {
-    const result = singleUser?.some(item => {
-      if (item.name === userData.name) {
-        return true
-      }
-      return false
-    })
+    const result = singleUser?.some(item => (item.name === userData.name ? true : false))
+
     if (!result) {
-      dispatch(addUserData(userData))
-      notify('Successfully added!')
-      setUserData({})
+      if (Object.keys(userData).length > 0 && userData.name !== '') {
+        dispatch(addUserData(userData))
+        notify('Successfully added!')
+        setUserData({})
+      }
     } else {
       notify('User Already added!')
       setUserData({})
@@ -108,65 +101,62 @@ const UserCard = () => {
 
   return (
     <>
-      <Button variant='success' className='ms-3 mt-3' onClick={() => setShow(true)}>
+      <Button variant='success' className='ms-3 mt-3' onClick={handleShow}>
         Add User & Food
       </Button>
       <div className='col-4 container'>
         {singleUser.length === 0 && <strong>Add Order Details!</strong>}
       </div>
       <div className='row'>
-        {singleUser?.map(item => {
-          return (
-            <div className=' mt-5 ms-5 col-lg-3 col-md-4 col-sm-6 col-8' key={item.name}>
-              <Card>
-                <Card.Body>
-                  <Card.Title>Bill Details</Card.Title>
-                  <table className='table'>
-                    <thead>
-                      <tr>
-                        <th scope='col'>Item</th>
-                        <th scope='col'>Quantity</th>
+        {singleUser?.map(item => (
+          <div className=' mt-5 ms-5 col-lg-3 col-md-4 col-sm-6 col-8' key={item.name}>
+            <Card>
+              <Card.Body>
+                <Card.Title>Bill Details</Card.Title>
+                <table className='table'>
+                  <thead>
+                    <tr>
+                      <th scope='col'>Item</th>
+                      <th scope='col'>Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {Object.entries(item)?.map(([name, value]) => (
+                      <tr key={name}>
+                        <td>{name}</td>
+                        <td>{value}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {Object.entries(item)?.map(([name, value]) => (
-                        <tr key={name}>
-                          <td>{name}</td>
-                          <td>{value}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <hr />
+                    ))}
+                  </tbody>
+                </table>
+                <hr />
 
-                  <FormLabel className='ms-2 me-4'>Total: {calculateBill(item)}</FormLabel>
-                  <Button
-                    className='ms-4 me-2'
-                    variant='success'
-                    onClick={() => {
-                      handleVisible()
-                      findUser(item.name)
-                    }}
-                  >
-                    Reminder
-                  </Button>
-                </Card.Body>
-              </Card>
-              <ToastContainer />
-              <ReminderModal
-                visible={visible}
-                sendEmail={sendEmail}
-                handleHide={() => setVisible(false)}
-                form={form}
-                specificUser={specificUser}
-              />
-            </div>
-          )
-        })}
+                <FormLabel className='ms-2 me-4'>Total: {calculateBill(item)}</FormLabel>
+                <Button
+                  className='ms-4 me-2'
+                  variant='success'
+                  onClick={() => {
+                    handleVisible()
+                    findUser(item.name)
+                  }}
+                >
+                  Reminder
+                </Button>
+              </Card.Body>
+            </Card>
+            <ReminderModal
+              visible={visible}
+              sendEmail={sendEmail}
+              handleHide={handleHide}
+              form={form}
+              specificUser={specificUser}
+            />
+          </div>
+        ))}
       </div>
       <AddUserModal
         show={show}
-        handleClose={() => setShow(false)}
+        handleClose={handleClose}
         singleUserData={singleUserData}
         userData={userData}
         setUserData={setUserData}

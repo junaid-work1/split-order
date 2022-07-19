@@ -1,4 +1,3 @@
-import React from 'react'
 import { Card } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
 
@@ -6,12 +5,10 @@ const Profile = () => {
   const activeUser = useSelector(state => state.activeUser)
   const bill = useSelector(state => state.individualBill)
   const totalBill = useSelector(state => state.totalBill)
+  const users = useSelector(state => state.users)
 
-  const result = bill?.filter(item => {
-    if (item.name === activeUser.name) {
-      return item
-    }
-  })
+  const [adminUser] = users.filter(item => item.isAdmin === true)
+  const result = bill?.filter(item => item.name === activeUser.name && item)
 
   return (
     <div className='row'>
@@ -20,18 +17,15 @@ const Profile = () => {
           <Card.Body>
             <Card.Title>Profile</Card.Title>
             <Card.Subtitle className='mb-2 text-muted'>Total Bill: Rs. {totalBill}</Card.Subtitle>
-
-            {bill?.map(item => {
-              return (
-                <Card.Text key={item.name}>
-                  {item.name !== 'Junaid' && (
-                    <strong>
-                      {item.name} owes Junaid : {item.bill}
-                    </strong>
-                  )}
-                </Card.Text>
-              )
-            })}
+            {bill?.map(item => (
+              <Card.Text key={item.name}>
+                {item.name !== adminUser?.name && (
+                  <strong>
+                    {item.name} owes {adminUser?.name} : {item.bill}
+                  </strong>
+                )}
+              </Card.Text>
+            ))}
           </Card.Body>
         </Card>
       ) : (
@@ -39,7 +33,9 @@ const Profile = () => {
           <Card.Body>
             <Card.Title>Profile</Card.Title>
             <Card.Subtitle className='mb-2 text-muted'> {result[0]?.name}</Card.Subtitle>
-            <Card.Text>You owes to Junaid : {result[0]?.bill || '0'} </Card.Text>
+            <Card.Text>
+              You owes to {adminUser?.name} : {result[0]?.bill || '0'}
+            </Card.Text>
           </Card.Body>
         </Card>
       )}

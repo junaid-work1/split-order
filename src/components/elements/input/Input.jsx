@@ -1,9 +1,10 @@
-import React from 'react'
 import PropTypes from 'prop-types'
 
 const Input = ({ type, name, handleChange, value, error }) => (
   <div>
-    <label className='form-label'>{name}</label>
+    <label className='form-label' htmlFor={name}>
+      {name}
+    </label>
     <input type={type} className='form-control' name={name} value={value} onChange={handleChange} />
     {error[name] && <p className='text-danger'>{error[name]}</p>}
   </div>

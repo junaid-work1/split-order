@@ -1,11 +1,13 @@
 import { addDoc, collection } from 'firebase/firestore'
 import { Button, Modal } from 'react-bootstrap'
 import { db } from 'firestoreConfig'
-import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { toast, ToastContainer } from 'react-toastify'
+import { toast } from 'react-toastify'
+import { useState } from 'react'
 
-const restaurantCollection = collection(db, 'restaurant')
+import { RESTAURANT_COLLECTION } from 'firestoreCollections/constants'
+
+const restaurantCollections = collection(db, RESTAURANT_COLLECTION)
 
 const RestaurantModal = ({ handleClose, show, getRestaurant }) => {
   const [restaurant, setRestaurant] = useState({ name: '' })
@@ -13,44 +15,44 @@ const RestaurantModal = ({ handleClose, show, getRestaurant }) => {
   const notify = masg => toast(masg)
 
   const addRestaurant = async () => {
-    await addDoc(restaurantCollection, restaurant)
+    if (restaurant.name === '') return
+    await addDoc(restaurantCollections, restaurant)
     getRestaurant()
+    setRestaurant({ name: '' })
     notify('Successfully Added!')
   }
 
   const handleChange = e => {
-    setRestaurant({ ...restaurant, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    setRestaurant({ ...restaurant, [name]: value })
   }
 
   return (
-    <>
-      <Modal show={show} onHide={handleClose} className='mt-5'>
-        <Modal.Header closeButton>Add New Restaurant</Modal.Header>
-        <Modal.Body>
-          <div className=''>
-            <div>
-              <label className='form-lable'>Name</label>
-              <input className='form-lable ms-3' type='text' name='name' onChange={handleChange} />
-            </div>
+    <Modal show={show} onHide={handleClose} className='mt-5'>
+      <Modal.Header closeButton>Add New Restaurant</Modal.Header>
+      <Modal.Body>
+        <div>
+          <div>
+            <label className='form-lable'>Name</label>
+            <input className='form-lable ms-3' type='text' name='name' onChange={handleChange} />
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant='secondary' onClick={handleClose}>
-            Cancel
-          </Button>
-          <Button
-            variant='success'
-            onClick={() => {
-              handleClose()
-              addRestaurant()
-            }}
-          >
-            Add
-          </Button>
-        </Modal.Footer>
-      </Modal>
-      <ToastContainer />
-    </>
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant='secondary' onClick={handleClose}>
+          Cancel
+        </Button>
+        <Button
+          variant='success'
+          onClick={() => {
+            handleClose()
+            addRestaurant()
+          }}
+        >
+          Add
+        </Button>
+      </Modal.Footer>
+    </Modal>
   )
 }
 

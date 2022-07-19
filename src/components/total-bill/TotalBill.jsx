@@ -1,11 +1,12 @@
 import { Card } from 'react-bootstrap'
-import React from 'react'
 import { useSelector } from 'react-redux'
 
 const TotalBill = () => {
   const bill = useSelector(state => state.individualBill)
   const totalBill = useSelector(state => state.totalBill)
+  const users = useSelector(state => state.users)
 
+  const [adminUser] = users.filter(item => item.isAdmin === true)
   return (
     <div className='row'>
       <Card className='col-6 mt-5 mb-5 container'>
@@ -13,17 +14,15 @@ const TotalBill = () => {
           <Card.Title>Total Bill</Card.Title>
           <Card.Subtitle className='mb-2 text-muted'>Rs:{totalBill}</Card.Subtitle>
           <Card.Text>You Pay : {totalBill}</Card.Text>
-          {bill?.map(item => {
-            return (
-              <Card.Text key={item.name}>
-                {item.name !== 'Junaid' && (
-                  <strong>
-                    {item.name} owes to junaid : {item.bill}
-                  </strong>
-                )}
-              </Card.Text>
-            )
-          })}
+          {bill?.map(item => (
+            <Card.Text key={item.name}>
+              {item.name !== adminUser?.name && (
+                <strong>
+                  {item.name} owes to {adminUser?.name} : {item.bill}
+                </strong>
+              )}
+            </Card.Text>
+          ))}
         </Card.Body>
       </Card>
     </div>

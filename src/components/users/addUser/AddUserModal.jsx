@@ -1,12 +1,12 @@
 import { Button, Modal } from 'react-bootstrap'
-import React, { useState, useRef } from 'react'
 import PropTypes from 'prop-types'
+import { useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { addIndividualBill } from 'redux/feature/singleUserBill/singleBillSlice'
 
 const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUserData, user }) => {
-  const [idividualUser, setIdividualUser] = useState({})
+  const [idividualUser, setIdividualUser] = useState('')
   const foodItem = useRef()
   const quantity = useRef()
   const userName = useRef()
@@ -17,7 +17,7 @@ const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUs
   const dispatch = useDispatch()
 
   const addFoodData = () => {
-    if (foodItem.current.value !== '' && quantity.current.value) {
+    if (foodItem.current.value !== '' && quantity.current.value !== '') {
       setUserData({
         ...userData,
         name: userName.current.value,
@@ -33,28 +33,23 @@ const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUs
 
   const idividualUserBill = () => {
     const bill = menu?.reduce((subTotal, obj) => {
-      let sum = 0
       for (const [key, value] of Object.entries(idividualUser)) {
         if (key !== 'name') {
           if (key === obj.name) {
-            sum = (obj.price / 100) * (value || 0) * 100
-            return subTotal + sum
+            return subTotal + (obj.price / 100) * (value || 0) * 100
           }
         }
       }
       return subTotal
     }, 0)
 
-    const result = billOfUsers?.some(item => {
-      if (item.name === idividualUser.name) {
-        return true
-      }
-      return false
-    })
+    const result = billOfUsers?.some(item => (item.name === idividualUser.name ? true : false))
 
     if (!result) {
-      dispatch(addIndividualBill({ name: idividualUser.name, bill }))
-      setIdividualUser({})
+      if (Object.keys(idividualUser).length > 1) {
+        dispatch(addIndividualBill({ name: idividualUser.name, bill }))
+        setIdividualUser({})
+      }
     }
 
     setIdividualUser({})
@@ -65,32 +60,23 @@ const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUs
       <Modal.Header closeButton>
         <label>User</label>
         <select className='ms-2 form-control-sm' name='name' ref={userName}>
-          <option defaultValue={'select'}>select</option>
-          {user?.map(item => {
-            return (
-              <option value={item.name} key={item.name + 1}>
-                {item?.name}
-              </option>
-            )
-          })}
+          {user?.map(item => (
+            <option value={item.name} key={item.name + 1}>
+              {item?.name}
+            </option>
+          ))}
         </select>
       </Modal.Header>
       <Modal.Body className='d-flex'>
         <select className='form-control-sm' name='name' ref={foodItem}>
           <option defaultValue={'select'}>select food</option>
           {menu
-            ?.filter(item => {
-              if (activeRestaurant.id === item.restaurantId) {
-                return item
-              }
-            })
-            ?.map(item => {
-              return (
-                <option value={item.name} key={item.name + 1}>
-                  {item?.name}
-                </option>
-              )
-            })}
+            ?.filter(item => activeRestaurant.id === item.restaurantId)
+            ?.map(item => (
+              <option value={item.name} key={item.name + 1}>
+                {item?.name}
+              </option>
+            ))}
         </select>
         <input type='number' className='form-control form-control-sm ms-4' min='0' ref={quantity} />
         <Button
@@ -108,14 +94,12 @@ const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUs
       <Modal.Body>
         <table className='table table-hover table-bordered'>
           <tbody>
-            {Object.entries(userData)?.map(([name, value]) => {
-              return (
-                <tr key={name}>
-                  <td>{name}</td>
-                  <td>{value}</td>
-                </tr>
-              )
-            })}
+            {Object.entries(userData)?.map(([name, value]) => (
+              <tr key={name}>
+                <td>{name}</td>
+                <td>{value}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </Modal.Body>

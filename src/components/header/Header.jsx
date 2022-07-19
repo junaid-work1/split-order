@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   MDBNavbar,
@@ -35,9 +35,11 @@ const Header = () => {
       Login
     </Link>
   )
+
   const delActiveUser = () => {
     disptach(addActiveUser({}))
   }
+
   return (
     <div className='row '>
       <MDBNavbar expand='lg' dark bgColor='success'>
@@ -73,10 +75,9 @@ const Header = () => {
                 </Link>
               </MDBNavbarItem>
             </MDBNavbarNav>
-
             <MDBNavbarLink>
               <MDBDropdown>
-                {activeUser.name ? activeUserName : loginTag}
+                {activeUser?.name ? activeUserName : loginTag}
                 <MDBDropdownMenu className='dropdown-default '>
                   <Link to='profile' className='header-links'>
                     <MDBDropdownItem>Profile</MDBDropdownItem>

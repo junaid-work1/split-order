@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { getDocs } from 'firebase/firestore'
+
 import { userCollection } from 'pages/auth/registration/Registration'
 
 export const getUser = createAsyncThunk('users/getUser', async () => {
@@ -12,9 +13,7 @@ export const userSlice = createSlice({
   initialState: [],
   reducers: {},
   extraReducers: builder => {
-    builder.addCase(getUser.fulfilled, (state, action) => {
-      return (state = action.payload)
-    })
+    builder.addCase(getUser.fulfilled, (state, action) => (state = action.payload))
   }
 })
 
