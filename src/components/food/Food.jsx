@@ -28,9 +28,12 @@ const Food = () => {
   const menu = useSelector(state => state.menu)
   const dispatch = useDispatch()
 
+  const handleFoodModal = () => setShow(!show)
+  const handleRestaurantModal = () => setVisible(!visible)
+
   const buttons = (
     <>
-      <Button onClick={() => setShow(true)}>Add Food</Button>
+      <Button onClick={handleFoodModal}>Add Food</Button>
       <Link to='usercard'>
         <Button> Split Bill</Button>
       </Link>
@@ -38,17 +41,12 @@ const Food = () => {
   )
 
   const getRestaurant = async () => {
-    const res2 = await getDocs(restaurantCollection)
-    setRestaurantData(res2.docs.map(doc => ({ ...doc.data(), id: doc.id })))
+    const response = await getDocs(restaurantCollection)
+    setRestaurantData(response.docs.map(doc => ({ ...doc.data(), id: doc.id })))
   }
 
-  const handleClose = () => setShow(false)
-
-  const handleVisible = () => setVisible(true)
-  const handleHide = () => setVisible(false)
-
-  const handleChange = e => {
-    const result = restaurantData?.filter(item => item.name === e.target.value && item)
+  const handleChange = event => {
+    const result = restaurantData?.filter(item => item.name === event.target.value && item)
     setSelectedRestaurant(...result)
     dispatch(addRestaurant(...result))
     setFlag(true)
@@ -59,8 +57,8 @@ const Food = () => {
   }, [])
 
   return (
-    <div className='row '>
-      <div className='col-6 container '>
+    <div className='row'>
+      <div className='col-6 container'>
         <div className='my-3'>
           {!selectedRestaurant.id && <strong className='text-danger'> Select Restaurant!</strong>}
           <select
@@ -76,7 +74,7 @@ const Food = () => {
             ))}
           </select>
         </div>
-        <h4 className='mt-2 '>{selectedRestaurant?.name}</h4>
+        <h4 className='mt-2'>{selectedRestaurant?.name}</h4>
         <table className='table table-hover table-bordered'>
           {selectedRestaurant.id && (
             <thead>
@@ -97,11 +95,19 @@ const Food = () => {
               ))}
           </tbody>
         </table>
-        <Button onClick={handleVisible}> Add Restaurant</Button>
+        <Button onClick={handleRestaurantModal}> Add Restaurant</Button>
         {selectedRestaurant.id && buttons}
       </div>
-      <FoodModal show={show} handleClose={handleClose} selectedRestaurant={selectedRestaurant} />
-      <RestaurantModal show={visible} handleClose={handleHide} getRestaurant={getRestaurant} />
+      <FoodModal
+        show={show}
+        handleClose={handleFoodModal}
+        selectedRestaurant={selectedRestaurant}
+      />
+      <RestaurantModal
+        show={visible}
+        handleClose={handleRestaurantModal}
+        getRestaurant={getRestaurant}
+      />
     </div>
   )
 }

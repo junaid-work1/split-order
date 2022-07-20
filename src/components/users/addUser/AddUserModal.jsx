@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addIndividualBill } from 'redux/feature/singleUserBill/singleBillSlice'
 
 const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUserData, user }) => {
-  const [idividualUser, setIdividualUser] = useState('')
+  const [individualUser, setIndividualUser] = useState('')
   const foodItem = useRef()
   const quantity = useRef()
   const userName = useRef()
@@ -23,43 +23,38 @@ const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUs
         name: userName.current.value,
         [foodItem.current.value]: quantity.current.value
       })
-      setIdividualUser({
-        ...idividualUser,
+      setIndividualUser({
+        ...individualUser,
         name: userName.current.value,
         [foodItem.current.value]: quantity.current.value
       })
     }
   }
 
-  const idividualUserBill = () => {
+  const individualUserBill = () => {
     const bill = menu?.reduce((subTotal, obj) => {
-      for (const [key, value] of Object.entries(idividualUser)) {
-        if (key !== 'name') {
-          if (key === obj.name) {
-            return subTotal + (obj.price / 100) * (value || 0) * 100
-          }
+      for (const [key, value] of Object.entries(individualUser)) {
+        if (key !== 'name' && key === obj.name) {
+          return subTotal + (obj.price / 100) * (value || 0) * 100
         }
       }
       return subTotal
     }, 0)
 
-    const result = billOfUsers?.some(item => (item.name === idividualUser.name ? true : false))
+    const result = billOfUsers?.some(item => (item.name === individualUser.name ? true : false))
 
-    if (!result) {
-      if (Object.keys(idividualUser).length > 1) {
-        dispatch(addIndividualBill({ name: idividualUser.name, bill }))
-        setIdividualUser({})
-      }
+    if (!result && Object.keys(individualUser).length > 1) {
+      dispatch(addIndividualBill({ name: individualUser.name, bill }))
+      setIndividualUser({})
     }
-
-    setIdividualUser({})
+    setIndividualUser({})
   }
 
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <label>User</label>
-        <select className='ms-2 form-control-sm' name='name' ref={userName}>
+        <label htmlFor='userName'>User</label>
+        <select className='ms-2 form-control-sm' id='userName' name='name' ref={userName}>
           {user?.map(item => (
             <option value={item.name} key={item.name + 1}>
               {item?.name}
@@ -112,7 +107,7 @@ const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUs
           onClick={() => {
             handleClose()
             singleUserData()
-            idividualUserBill()
+            individualUserBill()
           }}
         >
           Add

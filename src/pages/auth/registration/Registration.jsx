@@ -61,8 +61,8 @@ const Registration = () => {
     return errors
   }
 
-  const handleChange = e => {
-    const { name, value } = e.target
+  const handleChange = event => {
+    const { name, value } = event.target
     setRegistrationData({
       ...registrationData,
       [name]: value.trim()

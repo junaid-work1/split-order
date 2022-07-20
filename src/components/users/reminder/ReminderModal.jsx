@@ -10,8 +10,6 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
   const menu = useSelector(state => state.menu)
   const singleUser = useSelector(state => state.userData)
 
-  let billMessage = []
-
   const [result] = singleUser.filter(item => item.name === specificUser.name)
 
   if (!result) return
@@ -23,17 +21,19 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
 
   const bill = menu?.reduce((subTotal, obj) => {
     for (const [key, value] of Object.entries(result)) {
-      if (key !== 'name') {
-        if (key === obj.name) {
-          return subTotal + (obj.price / 100) * (value || 0) * 100
-        }
+      if (key !== 'name' && key === obj.name) {
+        return subTotal + (obj.price / 100) * (value || 0) * 100
       }
     }
     return subTotal
   }, 0)
 
-  for (const [key, value] of Object.entries(result)) {
-    billMessage.push(`${key} : ${value}  `)
+  const billDetails = () => {
+    let billMessage = []
+    for (const [key, value] of Object.entries(result)) {
+      billMessage.push(`${key}: ${value}`)
+    }
+    return billMessage
   }
 
   return (
@@ -44,7 +44,7 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
           <div className={styles.box}>
             {inputList.map(item => (
               <>
-                <label className='form-lable' htmlFor={name}>
+                <label className='form-lable' htmlFor={item.name}>
                   {item.name}
                 </label>
                 <FormInput type={item.type} name={item.name} defaultValue={item.defaultValue} />
@@ -52,10 +52,13 @@ const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) =
             ))}
           </div>
           <div className={styles.box}>
-            <label className='form-lable'>Bill Detail</label>
+            <label className='form-lable' htmlFor='billDetail'>
+              Bill Detail
+            </label>
             <textarea
               name='message'
-              defaultValue={`${billMessage} \n Your bill: ${bill}`}
+              id='billDetail'
+              defaultValue={`${billDetails()} \n Your bill: ${bill}`}
               readOnly
             />
           </div>

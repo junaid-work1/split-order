@@ -25,15 +25,13 @@ const UserCard = () => {
   const user = useSelector(state => state.users)
 
   const dispatch = useDispatch()
-  const notify = masg => toast(masg)
+  const notify = message => toast(message)
 
   const calculateBill = item => {
     return menu?.reduce((subTotal, obj) => {
       for (const [key, value] of Object.entries(item)) {
-        if (key !== 'name') {
-          if (key === obj.name) {
-            return subTotal + (obj.price / 100) * (value || 0) * 100
-          }
+        if (key !== 'name' && key === obj.name) {
+          return subTotal + (obj.price / 100) * (value || 0) * 100
         }
       }
       return subTotal
@@ -46,10 +44,8 @@ const UserCard = () => {
     const total = menu?.reduce((allTotal, obj) => {
       const sum = singleUser?.reduce((sum, item) => {
         for (const [key, value] of Object.entries(item)) {
-          if (key !== 'name') {
-            if (key === obj.name) {
-              return sum + (obj.price / 100) * (value || 0) * 100
-            }
+          if (key !== 'name' && key === obj.name) {
+            return sum + (obj.price / 100) * (value || 0) * 100
           }
         }
         return sum
@@ -65,29 +61,24 @@ const UserCard = () => {
     setSpecificUser(result)
   }
 
-  const handleShow = () => setShow(true)
-  const handleClose = () => setShow(false)
-
-  const handleVisible = () => setVisible(true)
-  const handleHide = () => setVisible(false)
+  const handleAddUserModal = () => setShow(!show)
+  const handleReminderModal = () => setVisible(!visible)
 
   const singleUserData = () => {
     const result = singleUser?.some(item => (item.name === userData.name ? true : false))
 
-    if (!result) {
-      if (Object.keys(userData).length > 0 && userData.name !== '') {
-        dispatch(addUserData(userData))
-        notify('Successfully added!')
-        setUserData({})
-      }
+    if (!result && Object.keys(userData).length > 0 && userData.name !== '') {
+      dispatch(addUserData(userData))
+      notify('Successfully added!')
+      setUserData({})
     } else {
       notify('User Already added!')
       setUserData({})
     }
   }
 
-  const sendEmail = e => {
-    e.preventDefault()
+  const sendEmail = event => {
+    event.preventDefault()
     handleHide()
     emailjs.sendForm('service_2uwgcxa', 'template_hzah24o', form.current, '5Hq4RD_4RiUF9I990').then(
       () => notify('Email is sent successfully!'),
@@ -101,7 +92,7 @@ const UserCard = () => {
 
   return (
     <>
-      <Button variant='success' className='ms-3 mt-3' onClick={handleShow}>
+      <Button variant='success' className='ms-3 mt-3' onClick={handleAddUserModal}>
         Add User & Food
       </Button>
       <div className='col-4 container'>
@@ -109,7 +100,7 @@ const UserCard = () => {
       </div>
       <div className='row'>
         {singleUser?.map(item => (
-          <div className=' mt-5 ms-5 col-lg-3 col-md-4 col-sm-6 col-8' key={item.name}>
+          <div className='mt-5 ms-5 col-lg-3 col-md-4 col-sm-6 col-8' key={item.name}>
             <Card>
               <Card.Body>
                 <Card.Title>Bill Details</Card.Title>
@@ -136,7 +127,7 @@ const UserCard = () => {
                   className='ms-4 me-2'
                   variant='success'
                   onClick={() => {
-                    handleVisible()
+                    handleReminderModal()
                     findUser(item.name)
                   }}
                 >
@@ -147,7 +138,7 @@ const UserCard = () => {
             <ReminderModal
               visible={visible}
               sendEmail={sendEmail}
-              handleHide={handleHide}
+              handleHide={handleReminderModal}
               form={form}
               specificUser={specificUser}
             />
@@ -156,7 +147,7 @@ const UserCard = () => {
       </div>
       <AddUserModal
         show={show}
-        handleClose={handleClose}
+        handleClose={handleAddUserModal}
         singleUserData={singleUserData}
         userData={userData}
         setUserData={setUserData}

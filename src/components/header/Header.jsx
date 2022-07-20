@@ -36,12 +36,12 @@ const Header = () => {
     </Link>
   )
 
-  const delActiveUser = () => {
+  const deleteActiveUser = () => {
     disptach(addActiveUser({}))
   }
 
   return (
-    <div className='row '>
+    <div className='row'>
       <MDBNavbar expand='lg' dark bgColor='success'>
         <MDBContainer fluid>
           <MDBNavbarBrand className='label'>Split Order</MDBNavbarBrand>
@@ -78,12 +78,12 @@ const Header = () => {
             <MDBNavbarLink>
               <MDBDropdown>
                 {activeUser?.name ? activeUserName : loginTag}
-                <MDBDropdownMenu className='dropdown-default '>
+                <MDBDropdownMenu className='dropdown-default'>
                   <Link to='profile' className='header-links'>
                     <MDBDropdownItem>Profile</MDBDropdownItem>
                   </Link>
                   <Link to='login' className='header-links'>
-                    <MDBDropdownItem onClick={delActiveUser}>Logout</MDBDropdownItem>
+                    <MDBDropdownItem onClick={deleteActiveUser}>Logout</MDBDropdownItem>
                   </Link>
                 </MDBDropdownMenu>
               </MDBDropdown>

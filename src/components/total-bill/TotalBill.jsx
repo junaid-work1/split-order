@@ -7,6 +7,7 @@ const TotalBill = () => {
   const users = useSelector(state => state.users)
 
   const [adminUser] = users.filter(item => item.isAdmin === true)
+
   return (
     <div className='row'>
       <Card className='col-6 mt-5 mb-5 container'>

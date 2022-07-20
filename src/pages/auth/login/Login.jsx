@@ -78,26 +78,34 @@ const Login = () => {
   }, [])
 
   return (
-    <div className='mt-5 p-5 col-lg-4 col-md-6 col-sm-7  container shadow-lg p-3 bg-body rounded'>
+    <div className='mt-5 p-5 col-lg-4 col-md-6 col-sm-7 container shadow-lg p-3 bg-body rounded'>
       <div className='form-outline mb-4'>
-        <label className='form-label'>Email address</label>
+        <label className='form-label' htmlFor='userEmail'>
+          Email address
+        </label>
         <input
           type='email'
           className='form-control'
+          id='userEmail'
+          name='email'
           value={email}
-          onChange={e => {
-            setEmail(e.target.value)
+          onChange={event => {
+            setEmail(event.target.value)
           }}
         />
         {error.email && <div className='alert alert-danger mt-2'>{error.email}</div>}
       </div>
       <div className='form-outline mb-4'>
-        <label className='form-label'>Password</label>
+        <label className='form-label' htmlFor='passcode'>
+          Password
+        </label>
         <input
           type='password'
           className='form-control'
+          id='passcode'
+          name='password'
           value={password}
-          onChange={e => setPassword(e.target.value)}
+          onChange={event => setPassword(event.target.value)}
         />
         {error.password && <div className='alert alert-danger mt-2'>{error.password}</div>}
       </div>
