@@ -1,0 +1,11 @@
+.reminder-main {
+  width: 100%;
+}
+
+.box {
+  display: grid;
+}
+
+.btn {
+  margin-top: 10px;
+}
