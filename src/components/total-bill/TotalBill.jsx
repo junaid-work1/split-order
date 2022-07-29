@@ -13,8 +13,10 @@ const TotalBill = () => {
       <Card className='col-6 mt-5 mb-5 container'>
         <Card.Body>
           <Card.Title>Total Bill</Card.Title>
-          <Card.Subtitle className='mb-2 text-muted'>Rs:{totalBill}</Card.Subtitle>
-          <Card.Text>You Pay : {totalBill}</Card.Text>
+          <Card.Subtitle className='mb-2 text-muted' data-testid='total-bill'>
+            Rs:{totalBill}
+          </Card.Subtitle>
+          <Card.Text data-testid='bill-you-paid'>You Pay : {totalBill}</Card.Text>
           {bill?.map(item => (
             <Card.Text key={item.name}>
               {item.name !== adminUser?.name && (

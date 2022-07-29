@@ -23,24 +23,22 @@ const route = [
 const AllRoutes = () => {
   const activeUser = useSelector(state => state.activeUser)
   return (
-    <div>
-      <BrowserRouter>
-        <Header />
-        {!activeUser.name ? (
-          <Routes>
-            <Route path='*' element={<NoPage />} />
-            <Route path='login' element={<Login />} />
-            <Route path='registration' element={<Registration />} />
-          </Routes>
-        ) : (
-          <Routes>
-            {route.map(item => (
-              <Route path={item.path} element={item.element} key={item.path} />
-            ))}
-          </Routes>
-        )}
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <Header />
+      {!activeUser.name ? (
+        <Routes>
+          <Route path='*' element={<NoPage />} />
+          <Route path='login' element={<Login />} />
+          <Route path='registration' element={<Registration />} />
+        </Routes>
+      ) : (
+        <Routes>
+          {route.map(item => (
+            <Route path={item.path} element={item.element} key={item.path} />
+          ))}
+        </Routes>
+      )}
+    </BrowserRouter>
   )
 }
 

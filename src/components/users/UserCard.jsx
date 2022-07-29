@@ -92,11 +92,18 @@ const UserCard = () => {
 
   return (
     <>
-      <Button variant='success' className='ms-3 mt-3' onClick={handleAddUserModal}>
+      <Button
+        variant='success'
+        data-testid='add-user-btn'
+        className='ms-3 mt-3'
+        onClick={handleAddUserModal}
+      >
         Add User & Food
       </Button>
       <div className='col-4 container'>
-        {singleUser.length === 0 && <strong>Add Order Details!</strong>}
+        {singleUser.length === 0 && (
+          <strong data-testid='initial-message'>Add Order Details!</strong>
+        )}
       </div>
       <div className='row'>
         {singleUser?.map(item => (

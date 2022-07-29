@@ -7,7 +7,6 @@ import {
   MDBIcon,
   MDBNavbarNav,
   MDBNavbarItem,
-  MDBNavbarLink,
   MDBNavbarToggler,
   MDBCollapse
 } from 'mdb-react-ui-kit'
@@ -58,36 +57,33 @@ const Header = () => {
           <MDBCollapse navbar show={showNavText}>
             <MDBNavbarNav className='mr-auto mb-2 mb-lg-0'>
               <MDBNavbarItem>
-                <Link to='/' className='header-links'>
-                  <MDBNavbarLink className='label' active aria-current='page'>
-                    Home
-                  </MDBNavbarLink>
+                <Link to='/' className='header-links label text-light fw-bold '>
+                  Home
                 </Link>
               </MDBNavbarItem>
               <MDBNavbarItem>
-                <Link to='usercard' className='header-links'>
-                  <MDBNavbarLink className='label'>Split Bill</MDBNavbarLink>
+                <Link to='usercard' className='header-links label text-light fw-bold ms-2'>
+                  Split Bill
                 </Link>
               </MDBNavbarItem>
               <MDBNavbarItem>
-                <Link to='totalbill' className='header-links'>
-                  <MDBNavbarLink className='label'>Total Bill</MDBNavbarLink>
+                <Link to='totalbill' className='header-links label text-light fw-bold ms-2'>
+                  Total Bill
                 </Link>
               </MDBNavbarItem>
             </MDBNavbarNav>
-            <MDBNavbarLink>
-              <MDBDropdown>
-                {activeUser?.name ? activeUserName : loginTag}
-                <MDBDropdownMenu className='dropdown-default'>
-                  <Link to='profile' className='header-links'>
-                    <MDBDropdownItem>Profile</MDBDropdownItem>
-                  </Link>
-                  <Link to='login' className='header-links'>
-                    <MDBDropdownItem onClick={deleteActiveUser}>Logout</MDBDropdownItem>
-                  </Link>
-                </MDBDropdownMenu>
-              </MDBDropdown>
-            </MDBNavbarLink>
+
+            <MDBDropdown>
+              {activeUser?.name ? activeUserName : loginTag}
+              <MDBDropdownMenu className='dropdown-default'>
+                <Link to='profile' className='header-links'>
+                  <MDBDropdownItem>Profile</MDBDropdownItem>
+                </Link>
+                <Link to='login' className='header-links'>
+                  <MDBDropdownItem onClick={deleteActiveUser}>Logout</MDBDropdownItem>
+                </Link>
+              </MDBDropdownMenu>
+            </MDBDropdown>
           </MDBCollapse>
         </MDBContainer>
       </MDBNavbar>

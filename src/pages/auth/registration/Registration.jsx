@@ -3,7 +3,7 @@ import { db } from 'firestoreConfig'
 import Joi from 'joi-browser'
 import React, { useState } from 'react'
 import { Outlet, Link } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify'
+import { toast } from 'react-toastify'
 
 import { schema } from 'validations/schemas/registrationValidation'
 import Input from 'components/elements/input/Input'
@@ -104,10 +104,11 @@ const Registration = () => {
               key={item.name}
             />
           ))}
-          {flag && <p className='text-danger'> Please make sure your passwords match</p>}
+          {flag && <p className='text-danger'>Please make sure your passwords match</p>}
         </div>
         <button
           type='button'
+          data-testid='resgister-btn'
           className='btn btn-success btn-block mb-4'
           onClick={() => {
             registerUser()
@@ -115,14 +116,12 @@ const Registration = () => {
         >
           Register
         </button>
-
         <div className='text-center'>
           <p>
             Already have a account? <Link to='/login'>Sign in</Link>
           </p>
         </div>
         <Outlet />
-        <ToastContainer />
       </div>
     </div>
   )

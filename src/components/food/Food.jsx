@@ -60,17 +60,24 @@ const Food = () => {
     <div className='row'>
       <div className='col-6 container'>
         <div className='my-3'>
-          {!selectedRestaurant.id && <strong className='text-danger'> Select Restaurant!</strong>}
+          {!selectedRestaurant.id && (
+            <strong className='text-danger' data-testid='select-message'>
+              Select Restaurant!
+            </strong>
+          )}
           <select
             className='form-select mt-3'
+            data-testid='select-list'
             onChange={handleChange}
             value={selectedRestaurant.name}
           >
             <option defaultValue disabled={flag}>
-              select restaurant
+              select restaurants
             </option>
             {restaurantData?.map(item => (
-              <option key={item.id}>{item?.name}</option>
+              <option key={item.id} data-testid='select-output'>
+                {item?.name}
+              </option>
             ))}
           </select>
         </div>

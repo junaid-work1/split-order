@@ -62,9 +62,10 @@ const Login = () => {
       }
     })
 
-    if (result.isAdmin === true) {
+    if (result?.isAdmin === true) {
       nav('/')
-    } else {
+    }
+    if (result?.isAdmin === false) {
       nav('/profile')
     }
 
