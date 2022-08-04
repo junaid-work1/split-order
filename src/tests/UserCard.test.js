@@ -1,6 +1,4 @@
-/* eslint-disable no-unused-vars */
-import { getByTestId, render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, screen } from '@testing-library/react'
 import UserCard from 'components/users/UserCard'
 
 import { Provider } from 'react-redux'
