@@ -1,13 +1,15 @@
-import { getDocs } from 'firebase/firestore'
-import { Link } from 'react-router-dom'
-import styled from 'styled-components'
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { addRestaurant } from 'redux/feature/restaurant/activeRestaurantSlice'
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from 'firestoreConfig'
+import styled from 'styled-components'
+
+import { addRestaurants } from 'redux/feature'
 import FoodModal from './foodModal/FoodModal'
-import { restaurantCollection } from 'pages/auth/registration/Registration'
 import RestaurantModal from './resautrantModal/RestaurantModal'
+import { RESTAURANT_COLLECTION } from 'firestoreCollections/constants'
 
 const Button = styled.button`
   color: white;
@@ -25,8 +27,9 @@ const Food = () => {
   const [show, setShow] = useState(false)
   const [visible, setVisible] = useState(false)
 
-  const menu = useSelector(state => state.menu)
   const dispatch = useDispatch()
+  const menu = useSelector(state => state.billSplitApp.menus)
+  const restaurantCollection = collection(db, RESTAURANT_COLLECTION)
 
   const handleFoodModal = () => setShow(!show)
   const handleRestaurantModal = () => setVisible(!visible)
@@ -39,16 +42,15 @@ const Food = () => {
       </Link>
     </>
   )
-
   const getRestaurant = async () => {
     const response = await getDocs(restaurantCollection)
     setRestaurantData(response.docs.map(doc => ({ ...doc.data(), id: doc.id })))
   }
 
   const handleChange = event => {
-    const result = restaurantData?.filter(item => item.name === event.target.value && item)
+    const result = restaurantData?.filter(item => item.name === event.target.value)
     setSelectedRestaurant(...result)
-    dispatch(addRestaurant(...result))
+    dispatch(addRestaurants(...result))
     setFlag(true)
   }
 
@@ -76,7 +78,7 @@ const Food = () => {
         </div>
         <h4 className='mt-2'>{selectedRestaurant?.name}</h4>
         <table className='table table-hover table-bordered'>
-          {selectedRestaurant.id && (
+          {selectedRestaurant?.id && (
             <thead>
               <tr>
                 <th scope='col'>Name</th>

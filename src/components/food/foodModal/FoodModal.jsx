@@ -1,65 +1,56 @@
-import { addDoc } from 'firebase/firestore'
-import { Button, Modal } from 'react-bootstrap'
-import PropTypes from 'prop-types'
-import { toast } from 'react-toastify'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { toast } from 'react-toastify'
+import { Button, Modal } from 'react-bootstrap'
 
-import { getMenu } from 'redux/feature/menu/menuSlice'
-import { menuCollection } from 'pages/auth/registration/Registration'
+import { addDoc, collection } from 'firebase/firestore'
+import { db } from 'firestoreConfig'
+import PropTypes from 'prop-types'
+
+import { foodModalValidate } from 'helperFunctions/validationHelper'
+import { getMenus } from 'redux/feature'
+import { MENU_COLLECTION } from 'firestoreCollections/constants'
 
 const FoodModal = ({ handleClose, show, selectedRestaurant }) => {
+  const [error, setError] = useState({})
   const [menuData, setMenuData] = useState({ name: '', price: '' })
-  const notify = message => toast(message)
 
   const dispatch = useDispatch()
+  const menuCollection = collection(db, MENU_COLLECTION)
+  const notify = message => toast(message)
 
-  const addMenuItem = async () => {
-    const { name, price } = menuData
-    if (name === '' || price === '') return
-
-    const data = { name: name, price: Number(price), restaurantId: selectedRestaurant.id }
-    await addDoc(menuCollection, data)
-    dispatch(getMenu())
-    setMenuData({ name: '', price: '' })
-    notify('Successfully Added!')
-  }
+  foodModalValidate(menuData.name, menuData.price)
 
   const handleChange = event => {
     const { name, value } = event.target
     setMenuData({ ...menuData, [name]: value })
   }
 
+  const addMenuItem = async () => {
+    const { name, price } = menuData
+    const errors = foodModalValidate(menuData.name, menuData.price)
+    setError(errors || {})
+    if (errors) return
+
+    const data = { name: name, price: Number(price), restaurantId: selectedRestaurant.id }
+    await addDoc(menuCollection, data)
+    dispatch(getMenus())
+    setMenuData({ name: '', price: '' })
+    handleClose()
+    notify('Successfully Added!')
+  }
+
   return (
     <Modal show={show} onHide={handleClose} className='mt-5'>
       <Modal.Header>Add New Food Item</Modal.Header>
       <Modal.Body>
-        <div>
-          <div>
-            <label className='form-lable' htmlFor='foodName'>
-              Name
-            </label>
-            <input
-              className='form-lable ms-3'
-              id='foodName'
-              type='text'
-              name='name'
-              onChange={handleChange}
-            />
-          </div>
-          <div className='mt-4'>
-            <label className='form-lable' htmlFor='foodPrice'>
-              Price
-            </label>
-            <input
-              className='form-lable ms-4'
-              id='foodPrice'
-              type='number'
-              name='price'
-              min='0'
-              onChange={handleChange}
-            />
-          </div>
+        Name
+        <input className='ms-3' type='text' name='name' onChange={handleChange} />
+        {error.name && <p className='text-danger small ms-3 mt-2'>{error.name}</p>}
+        <div className='mt-4'>
+          Price
+          <input className='ms-4' type='number' name='price' min='0' onChange={handleChange} />
+          {error.price && <p className='text-danger small ms-3 mt-2'>{error.price}</p>}
         </div>
       </Modal.Body>
       <Modal.Footer>
@@ -68,6 +59,7 @@ const FoodModal = ({ handleClose, show, selectedRestaurant }) => {
           onClick={() => {
             handleClose()
             setMenuData({ name: '', price: '' })
+            setError({})
           }}
         >
           Cancel
@@ -75,7 +67,6 @@ const FoodModal = ({ handleClose, show, selectedRestaurant }) => {
         <Button
           variant='success'
           onClick={() => {
-            handleClose()
             addMenuItem()
           }}
         >

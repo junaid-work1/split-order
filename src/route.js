@@ -21,7 +21,7 @@ const route = [
 ]
 
 const AllRoutes = () => {
-  const activeUser = useSelector(state => state.activeUser)
+  const activeUser = useSelector(state => state.billSplitApp.activeUser)
   return (
     <div>
       <BrowserRouter>

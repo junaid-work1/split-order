@@ -1,50 +1,53 @@
-import { Button, Modal } from 'react-bootstrap'
-import PropTypes from 'prop-types'
 import { useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { Button, Modal } from 'react-bootstrap'
 
-import { addIndividualBill } from 'redux/feature/singleUserBill/singleBillSlice'
+import PropTypes from 'prop-types'
 
-const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUserData, user }) => {
+import { addindividualBill } from 'redux/feature'
+import { addDataAboutFood, individualUserBillHandler } from 'helperFunctions/userHelper'
+
+const AddUserModal = ({
+  handleClose,
+  menu,
+  show,
+  singleUserData,
+  userData,
+  setUserData,
+  user,
+  error,
+  setError
+}) => {
   const [individualUser, setIndividualUser] = useState('')
   const foodItem = useRef()
   const quantity = useRef()
   const userName = useRef()
 
-  const activeRestaurant = useSelector(state => state.activeRestaurant)
-  const billOfUsers = useSelector(state => state.individualBill)
+  const activeRestaurant = useSelector(state => state.billSplitApp.activeRestaurant)
+  const billOfUsers = useSelector(state => state.billSplitApp.individualBill)
 
   const dispatch = useDispatch()
 
   const addFoodData = () => {
-    if (foodItem.current.value !== '' && quantity.current.value !== '') {
-      setUserData({
-        ...userData,
-        name: userName.current.value,
-        [foodItem.current.value]: quantity.current.value
-      })
-      setIndividualUser({
-        ...individualUser,
-        name: userName.current.value,
-        [foodItem.current.value]: quantity.current.value
-      })
-    }
+    addDataAboutFood(
+      foodItem.current.value,
+      quantity.current.value,
+      userName.current.value,
+      setError,
+      setUserData,
+      userData,
+      setIndividualUser,
+      individualUser
+    )
   }
 
   const individualUserBill = () => {
-    const bill = menu?.reduce((subTotal, obj) => {
-      for (const [key, value] of Object.entries(individualUser)) {
-        if (key !== 'name' && key === obj.name) {
-          return subTotal + (obj.price / 100) * (value || 0) * 100
-        }
-      }
-      return subTotal
-    }, 0)
+    const bill = individualUserBillHandler(menu, individualUser)
 
     const result = billOfUsers?.some(item => (item.name === individualUser.name ? true : false))
 
     if (!result && Object.keys(individualUser).length > 1) {
-      dispatch(addIndividualBill({ name: individualUser.name, bill }))
+      dispatch(addindividualBill({ name: individualUser.name, bill }))
       setIndividualUser({})
     }
     setIndividualUser({})
@@ -53,8 +56,8 @@ const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUs
   return (
     <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
-        <label htmlFor='userName'>User</label>
-        <select className='ms-2 form-control-sm' id='userName' name='name' ref={userName}>
+        User
+        <select className='ms-2 form-control-sm' name='name' ref={userName}>
           {user?.map(item => (
             <option value={item.name} key={item.name + 1}>
               {item?.name}
@@ -64,7 +67,6 @@ const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUs
       </Modal.Header>
       <Modal.Body className='d-flex'>
         <select className='form-control-sm' name='name' ref={foodItem}>
-          <option defaultValue={'select'}>select food</option>
           {menu
             ?.filter(item => activeRestaurant.id === item.restaurantId)
             ?.map(item => (
@@ -83,9 +85,8 @@ const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUs
         >
           add
         </Button>
-        <hr />
-        <hr />
       </Modal.Body>
+      {error && <p className='text-danger small ms-5'>input should not be empty</p>}
       <Modal.Body>
         <table className='table table-hover table-bordered'>
           <tbody>
@@ -99,13 +100,19 @@ const AddUserModal = ({ handleClose, menu, show, singleUserData, userData, setUs
         </table>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant='secondary' onClick={handleClose}>
+        <Button
+          variant='secondary'
+          onClick={() => {
+            handleClose()
+            setError(false)
+            setUserData({})
+          }}
+        >
           Cancel
         </Button>
         <Button
           variant='success'
           onClick={() => {
-            handleClose()
             singleUserData()
             individualUserBill()
           }}
@@ -123,6 +130,8 @@ AddUserModal.propTypes = {
   handleChange: PropTypes.func,
   handleClose: PropTypes.func,
   menu: PropTypes.array,
+  error: PropTypes.bool,
+  setError: PropTypes.func,
   setUserData: PropTypes.func,
   singleUserData: PropTypes.func,
   show: PropTypes.bool,

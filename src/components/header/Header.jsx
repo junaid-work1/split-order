@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   MDBNavbar,
   MDBContainer,
@@ -12,16 +13,15 @@ import {
   MDBCollapse
 } from 'mdb-react-ui-kit'
 import { MDBDropdown, MDBDropdownItem, MDBDropdownMenu, MDBDropdownToggle } from 'mdbreact'
-import { useDispatch, useSelector } from 'react-redux'
 
-import { addActiveUser } from 'redux/feature/activeUser/activeUserSlice'
+import { addactiveUser } from 'redux/feature'
 
 import './header.css'
 
 const Header = () => {
   const [showNavText, setShowNavText] = useState(false)
 
-  const activeUser = useSelector(state => state.activeUser)
+  const activeUser = useSelector(state => state.billSplitApp.activeUser)
   const disptach = useDispatch()
 
   const activeUserName = (
@@ -37,7 +37,7 @@ const Header = () => {
   )
 
   const deleteActiveUser = () => {
-    disptach(addActiveUser({}))
+    disptach(addactiveUser({}))
   }
 
   return (
@@ -46,6 +46,7 @@ const Header = () => {
         <MDBContainer fluid>
           <MDBNavbarBrand className='label'>Split Order</MDBNavbarBrand>
           <MDBNavbarToggler
+            className='bg-black border-4 border-dark'
             type='button'
             data-target='#navbarText'
             aria-controls='navbarText'

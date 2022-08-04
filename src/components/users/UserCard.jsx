@@ -1,18 +1,18 @@
-import { Button, Card, FormLabel } from 'react-bootstrap'
-import emailjs from '@emailjs/browser'
-import { toast } from 'react-toastify'
 import { useEffect, useRef, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-
-import AddUserModal from './addUser/AddUserModal'
-import { addUserData } from 'redux/feature/singleUserData/singleUserSlice'
-import { addBill } from 'redux/feature/totalBill/totalBillSlice'
-import ReminderModal from './reminder/ReminderModal'
-
+import { toast } from 'react-toastify'
+import { Button, Card, FormLabel } from 'react-bootstrap'
 import 'react-toastify/dist/ReactToastify.css'
 import 'react-responsive-modal/styles.css'
 
+import emailjs from '@emailjs/browser'
+
+import AddUserModal from './addUser/AddUserModal'
+import { addBill, adduserData } from 'redux/feature'
+import ReminderModal from './reminder/ReminderModal'
+
 const UserCard = () => {
+  const [error, setError] = useState(false)
   const [show, setShow] = useState(false)
   const [specificUser, setSpecificUser] = useState({})
   const [userData, setUserData] = useState({})
@@ -20,9 +20,9 @@ const UserCard = () => {
 
   const form = useRef()
 
-  const menu = useSelector(state => state.menu)
-  const singleUser = useSelector(state => state.userData)
-  const user = useSelector(state => state.users)
+  const menu = useSelector(state => state.billSplitApp.menus)
+  const singleUser = useSelector(state => state.billSplitApp.userData)
+  const user = useSelector(state => state.billSplitApp.users)
 
   const dispatch = useDispatch()
   const notify = message => toast(message)
@@ -66,13 +66,14 @@ const UserCard = () => {
 
   const singleUserData = () => {
     const result = singleUser?.some(item => (item.name === userData.name ? true : false))
-
+    if (result === false) setError(true)
     if (!result && Object.keys(userData).length > 0 && userData.name !== '') {
-      dispatch(addUserData(userData))
+      dispatch(adduserData(userData))
       notify('Successfully added!')
       setUserData({})
+      handleAddUserModal()
+      setError(false)
     } else {
-      notify('User Already added!')
       setUserData({})
     }
   }
@@ -121,7 +122,6 @@ const UserCard = () => {
                   </tbody>
                 </table>
                 <hr />
-
                 <FormLabel className='ms-2 me-4'>Total: {calculateBill(item)}</FormLabel>
                 <Button
                   className='ms-4 me-2'
@@ -153,6 +153,8 @@ const UserCard = () => {
         setUserData={setUserData}
         user={user}
         menu={menu}
+        error={error}
+        setError={setError}
       />
     </>
   )

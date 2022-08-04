@@ -1,11 +1,11 @@
-import { Card } from 'react-bootstrap'
 import { useSelector } from 'react-redux'
+import { Card } from 'react-bootstrap'
 
 const Profile = () => {
-  const activeUser = useSelector(state => state.activeUser)
-  const bill = useSelector(state => state.individualBill)
-  const totalBill = useSelector(state => state.totalBill)
-  const users = useSelector(state => state.users)
+  const activeUser = useSelector(state => state.billSplitApp.activeUser)
+  const bill = useSelector(state => state.billSplitApp.individualBill)
+  const totalBill = useSelector(state => state.billSplitApp.totalBill)
+  const users = useSelector(state => state.billSplitApp.users)
 
   const [adminUser] = users.filter(item => item.isAdmin === true)
   const result = bill?.filter(item => item.name === activeUser.name && item)

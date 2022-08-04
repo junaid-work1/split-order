@@ -2,15 +2,14 @@ import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 
 import Food from 'components/food/Food'
-import { getUser } from 'redux/feature/getRegisterUser/userSlice'
-import { getMenu } from 'redux/feature/menu/menuSlice'
+import { getMenus, getUsers } from 'redux/feature'
 
 const Home = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    dispatch(getUser())
-    dispatch(getMenu())
+    dispatch(getUsers())
+    dispatch(getMenus())
   }, [])
 
   return <Food />

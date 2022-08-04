@@ -1,56 +1,55 @@
-import { addDoc, collection } from 'firebase/firestore'
+import { useState } from 'react'
+import { toast } from 'react-toastify'
 import { Button, Modal } from 'react-bootstrap'
+
+import { addDoc, collection } from 'firebase/firestore'
 import { db } from 'firestoreConfig'
 import PropTypes from 'prop-types'
-import { toast } from 'react-toastify'
-import { useState } from 'react'
 
 import { RESTAURANT_COLLECTION } from 'firestoreCollections/constants'
-
-const restaurantCollections = collection(db, RESTAURANT_COLLECTION)
+import { Restaurantvalidate } from 'helperFunctions/validationHelper'
 
 const RestaurantModal = ({ handleClose, show, getRestaurant }) => {
   const [restaurant, setRestaurant] = useState({ name: '' })
+  const [error, setError] = useState(false)
 
+  const restaurantCollections = collection(db, RESTAURANT_COLLECTION)
   const notify = message => toast(message)
 
-  const addRestaurant = async () => {
-    if (restaurant.name === '') return
-    await addDoc(restaurantCollections, restaurant)
-    getRestaurant()
-    setRestaurant({ name: '' })
-    notify('Successfully Added!')
-  }
+  Restaurantvalidate(restaurant.name)
 
   const handleChange = event => {
     const { name, value } = event.target
     setRestaurant({ ...restaurant, [name]: value })
   }
 
+  const addRestaurant = async () => {
+    const errors = Restaurantvalidate(restaurant.name)
+    setError(errors || {})
+    if (errors) return
+
+    handleClose()
+    await addDoc(restaurantCollections, restaurant)
+    getRestaurant()
+    setRestaurant({ name: '' })
+    notify('Successfully Added!')
+    setError(false)
+  }
+
   return (
     <Modal show={show} onHide={handleClose} className='mt-5'>
       <Modal.Header>Add New Restaurant</Modal.Header>
       <Modal.Body>
-        <div>
-          <div>
-            <label className='form-lable' htmlFor='restaurantName'>
-              Name
-            </label>
-            <input
-              className='form-lable ms-3'
-              id='restaurantName'
-              type='text'
-              name='name'
-              onChange={handleChange}
-            />
-          </div>
-        </div>
+        Name
+        <input className='ms-3' type='text' name='name' onChange={handleChange} />
+        {error?.name && <p className='text-danger small mt-2 ms-5'>{error.name}</p>}
       </Modal.Body>
       <Modal.Footer>
         <Button
           variant='secondary'
           onClick={() => {
             setRestaurant({ name: '' })
+            setError(false)
             handleClose()
           }}
         >
@@ -59,7 +58,6 @@ const RestaurantModal = ({ handleClose, show, getRestaurant }) => {
         <Button
           variant='success'
           onClick={() => {
-            handleClose()
             addRestaurant()
           }}
         >

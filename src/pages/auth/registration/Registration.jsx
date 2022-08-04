@@ -1,33 +1,24 @@
-import { collection, addDoc } from 'firebase/firestore'
-import { db } from 'firestoreConfig'
-import Joi from 'joi-browser'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Outlet, Link } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify'
-
-import { schema } from 'validations/schemas/registrationValidation'
-import Input from 'components/elements/input/Input'
-import {
-  MENU_COLLECTION,
-  RESTAURANT_COLLECTION,
-  USER_COLLECTION
-} from 'firestoreCollections/constants'
-
+import { useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-export const userCollection = collection(db, USER_COLLECTION)
-export const restaurantCollection = collection(db, RESTAURANT_COLLECTION)
-export const menuCollection = collection(db, MENU_COLLECTION)
+import Input from 'components/elements/input/Input'
+import { resgistrationValidate } from 'helperFunctions/validationHelper'
+import { handleRegisterUser } from 'helperFunctions/authHelper'
 
 const Registration = () => {
-  const [error, setError] = useState({})
-  const [flag, setFlag] = useState(false)
   const [registrationData, setRegistrationData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: ''
   })
+  const [flag, setFlag] = useState(false)
+  const [error, setError] = useState({})
+
+  const nav = useNavigate()
 
   const inputList = [
     { value: registrationData.name, name: 'name', type: 'text' },
@@ -38,28 +29,12 @@ const Registration = () => {
 
   const notify = () => toast('Successfull user created!')
 
-  const validate = () => {
-    const result = Joi.validate(
-      {
-        name: registrationData.name,
-        password: registrationData.password,
-        email: registrationData.email,
-        confirmPassword: registrationData.confirmPassword
-      },
-      schema,
-      {
-        abortEarly: false
-      }
-    )
-    if (result.error === null) return
-
-    const errors = {}
-
-    for (let item of result.error.details) {
-      errors[item.path[0]] = item.message
-    }
-    return errors
-  }
+  resgistrationValidate(
+    registrationData.name,
+    registrationData.password,
+    registrationData.email,
+    registrationData.confirmPassword
+  )
 
   const handleChange = event => {
     const { name, value } = event.target
@@ -72,22 +47,24 @@ const Registration = () => {
   const registerUser = async () => {
     const { name, email, password } = registrationData
     const user = { name, email, password, isAdmin: Boolean(false) }
-    const errors = validate()
+    const errors = resgistrationValidate(
+      registrationData.name,
+      registrationData.password,
+      registrationData.email,
+      registrationData.confirmPassword
+    )
     setError(errors || {})
     if (errors) return
-    if (registrationData.password === registrationData.confirmPassword) {
-      await addDoc(userCollection, user)
-      setRegistrationData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-      })
-      notify()
-      setFlag(false)
-    } else {
-      setFlag(true)
-    }
+
+    handleRegisterUser(
+      registrationData.password,
+      registrationData.confirmPassword,
+      user,
+      setFlag,
+      setRegistrationData,
+      notify,
+      nav
+    )
   }
 
   return (
@@ -122,7 +99,6 @@ const Registration = () => {
           </p>
         </div>
         <Outlet />
-        <ToastContainer />
       </div>
     </div>
   )

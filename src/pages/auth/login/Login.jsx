@@ -1,76 +1,51 @@
-import { getDocs } from 'firebase/firestore'
-import Joi from 'joi-browser'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
-import { addActiveUser } from 'redux/feature/activeUser/activeUserSlice'
-import { schema } from 'validations/schemas/loginValidation'
-import { userCollection } from 'pages/auth/registration/Registration'
+import { db } from 'firestoreConfig'
+import { collection, getDocs } from 'firebase/firestore'
+
+import { loginUserHandler } from 'helperFunctions/authHelper'
+import Input from 'components/elements/input/Input'
+import { USER_COLLECTION } from 'firestoreCollections/constants'
+import { validate } from 'helperFunctions/validationHelper'
 
 const Login = () => {
-  const [error, setError] = useState({})
-  const [email, setEmail] = useState('')
-  const [flag, setFlag] = useState(false)
-  const [password, setPassword] = useState('')
-  const [users, setUsers] = useState([])
+  const [loginData, setLoginData] = useState({ email: '', password: '' })
+  const [generic, setGeneric] = useState({ users: [], flag: false, error: {} })
 
   const disptach = useDispatch()
   const nav = useNavigate()
 
+  const userCollection = collection(db, USER_COLLECTION)
+  const inputList = [
+    { value: loginData.email, name: 'email', type: 'email' },
+    { value: loginData.password, name: 'password', type: 'password' }
+  ]
+
   const getUser = async () => {
     const res = await getDocs(userCollection)
-    setUsers(res.docs.map(doc => ({ ...doc.data(), id: doc.id })))
+    setGeneric({ ...generic, users: res.docs.map(doc => ({ ...doc.data(), id: doc.id })) })
   }
 
-  const validate = () => {
-    const result = Joi.validate(
-      {
-        password: password,
-        email: email
-      },
-      schema,
-      {
-        abortEarly: false
-      }
-    )
-    if (result.error === null) return
-
-    const errors = {}
-
-    for (let item of result.error.details) {
-      errors[item.path[0]] = item.message
-    }
-    return errors
+  const handleChange = event => {
+    const { name, value } = event.target
+    setLoginData({
+      ...loginData,
+      [name]: value.trim()
+    })
   }
+
+  validate(loginData.email, loginData.password)
 
   const loginUser = () => {
-    const user = { email, password }
-
-    const errors = validate()
-    setError(errors || {})
+    const user = { email: loginData.email, password: loginData.password }
+    const errors = validate(loginData.email, loginData.password)
+    setGeneric({ ...generic, error: errors } || {})
     if (errors) return
 
-    const [result] = users.filter(element => {
-      if (element.email === user.email && element.password === user.password) {
-        setEmail('')
-        setPassword('')
-        disptach(addActiveUser(element))
-
-        return element
-      }
-    })
-
-    if (result.isAdmin === true) {
-      nav('/')
-    } else {
-      nav('/profile')
-    }
-
-    if (!result) {
-      setFlag(true)
-    }
+    loginUserHandler(generic.users, user, setLoginData, generic, setGeneric, disptach, nav)
   }
 
   useEffect(() => {
@@ -80,36 +55,20 @@ const Login = () => {
   return (
     <div className='mt-5 p-5 col-lg-4 col-md-6 col-sm-7 container shadow-lg p-3 bg-body rounded'>
       <div className='form-outline mb-4'>
-        <label className='form-label' htmlFor='userEmail'>
-          Email address
-        </label>
-        <input
-          type='email'
-          className='form-control'
-          id='userEmail'
-          name='email'
-          value={email}
-          onChange={event => {
-            setEmail(event.target.value)
-          }}
-        />
-        {error.email && <div className='alert alert-danger mt-2'>{error.email}</div>}
+        {inputList.map(item => (
+          <Input
+            type={item.type}
+            name={item.name}
+            handleChange={handleChange}
+            value={item.value}
+            error={generic.error}
+            key={item.name}
+          />
+        ))}
       </div>
-      <div className='form-outline mb-4'>
-        <label className='form-label' htmlFor='passcode'>
-          Password
-        </label>
-        <input
-          type='password'
-          className='form-control'
-          id='passcode'
-          name='password'
-          value={password}
-          onChange={event => setPassword(event.target.value)}
-        />
-        {error.password && <div className='alert alert-danger mt-2'>{error.password}</div>}
-      </div>
-      {flag && <p className='text-danger'> The email or password you entered is incorrect.</p>}
+      {generic.flag && (
+        <p className='text-danger'> The email or password you entered is incorrect.</p>
+      )}
       <button
         type='button'
         className='btn btn-success btn-block mb-4'
@@ -120,9 +79,7 @@ const Login = () => {
         Sign in
       </button>
       <div className='text-center'>
-        <p>
-          Not a member? <Link to='/registration'>Register</Link>
-        </p>
+        Not a member? <Link to='/registration'>Register</Link>
       </div>
     </div>
   )

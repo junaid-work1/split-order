@@ -2,13 +2,11 @@ import PropTypes from 'prop-types'
 
 const Input = ({ type, name, handleChange, value, error }) => (
   <div>
-    <label className='form-label' htmlFor={name}>
-      {name}
-    </label>
+    {name}
     <input
       type={type}
       id={name}
-      className='form-control'
+      className='form-control mb-3'
       name={name}
       value={value}
       onChange={handleChange}
