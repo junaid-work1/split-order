@@ -1,15 +1,15 @@
 import { useState } from 'react'
-import { toast } from 'react-toastify'
-import { Button, Modal } from 'react-bootstrap'
 
 import { addDoc, collection } from 'firebase/firestore'
+import { Button, Modal } from 'react-bootstrap'
 import { db } from 'firestoreConfig'
+import { toast } from 'react-toastify'
 import PropTypes from 'prop-types'
 
-import { RESTAURANT_COLLECTION } from 'firestoreCollections/constants'
+import { RESTAURANT_COLLECTION } from 'constants/dbNames'
 import { Restaurantvalidate } from 'helperFunctions/validationHelper'
 
-const RestaurantModal = ({ handleClose, show, getRestaurant }) => {
+const RestaurantModal = ({ getRestaurant, handleClose, show }) => {
   const [restaurant, setRestaurant] = useState({ name: '' })
   const [error, setError] = useState(false)
 

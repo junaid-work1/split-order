@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
 
 import { collection, getDocs } from 'firebase/firestore'
 import { db } from 'firestoreConfig'
+import { useSelector, useDispatch } from 'react-redux'
 import styled from 'styled-components'
 
-import { addRestaurants } from 'redux/feature'
+import { addRestaurants } from 'redux/reducer'
 import FoodModal from './foodModal/FoodModal'
 import RestaurantModal from './resautrantModal/RestaurantModal'
-import { RESTAURANT_COLLECTION } from 'firestoreCollections/constants'
+import { RESTAURANT_COLLECTION } from 'constants/dbNames'
 
 const Button = styled.button`
   color: white;
@@ -101,14 +101,14 @@ const Food = () => {
         {selectedRestaurant.id && buttons}
       </div>
       <FoodModal
-        show={show}
         handleClose={handleFoodModal}
         selectedRestaurant={selectedRestaurant}
+        show={show}
       />
       <RestaurantModal
-        show={visible}
-        handleClose={handleRestaurantModal}
         getRestaurant={getRestaurant}
+        handleClose={handleRestaurantModal}
+        show={visible}
       />
     </div>
   )

@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react'
+
 import { useDispatch } from 'react-redux'
 
+import { getMenus, getUsers } from 'redux/actions/getUserAction'
 import Food from 'components/food/Food'
-import { getMenus, getUsers } from 'redux/feature'
 
 const Home = () => {
   const dispatch = useDispatch()

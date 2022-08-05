@@ -1,15 +1,16 @@
 import { useEffect, useRef, useState } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { toast } from 'react-toastify'
-import { Button, Card, FormLabel } from 'react-bootstrap'
-import 'react-toastify/dist/ReactToastify.css'
-import 'react-responsive-modal/styles.css'
 
+import { Button, Card, FormLabel } from 'react-bootstrap'
+import { toast } from 'react-toastify'
+import { useSelector, useDispatch } from 'react-redux'
 import emailjs from '@emailjs/browser'
 
 import AddUserModal from './addUser/AddUserModal'
-import { addBill, adduserData } from 'redux/feature'
+import { addBill, adduserData } from 'redux/reducer'
 import ReminderModal from './reminder/ReminderModal'
+
+import 'react-toastify/dist/ReactToastify.css'
+import 'react-responsive-modal/styles.css'
 
 const UserCard = () => {
   const [error, setError] = useState(false)
@@ -136,25 +137,25 @@ const UserCard = () => {
               </Card.Body>
             </Card>
             <ReminderModal
-              visible={visible}
-              sendEmail={sendEmail}
-              handleHide={handleReminderModal}
               form={form}
+              handleHide={handleReminderModal}
+              sendEmail={sendEmail}
               specificUser={specificUser}
+              visible={visible}
             />
           </div>
         ))}
       </div>
       <AddUserModal
-        show={show}
-        handleClose={handleAddUserModal}
-        singleUserData={singleUserData}
-        userData={userData}
-        setUserData={setUserData}
-        user={user}
-        menu={menu}
         error={error}
+        handleClose={handleAddUserModal}
+        menu={menu}
         setError={setError}
+        setUserData={setUserData}
+        show={show}
+        singleUserData={singleUserData}
+        user={user}
+        userData={userData}
       />
     </>
   )

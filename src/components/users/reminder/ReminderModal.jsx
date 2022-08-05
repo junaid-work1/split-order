@@ -1,13 +1,12 @@
-import { useSelector } from 'react-redux'
 import { Modal } from 'react-bootstrap'
-
+import { useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 
 import { billDetailsHandler, billsHandler } from 'helperFunctions/userHelper'
 import FormInput from 'components/elements/input/FormInput'
 import styles from './reminder.module.css'
 
-const ReminderModal = ({ visible, sendEmail, handleHide, form, specificUser }) => {
+const ReminderModal = ({ form, handleHide, sendEmail, specificUser, visible }) => {
   const menu = useSelector(state => state.billSplitApp.menus)
   const singleUser = useSelector(state => state.billSplitApp.userData)
 

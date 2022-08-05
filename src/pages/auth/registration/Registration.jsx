@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { Outlet, Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 
-import Input from 'components/elements/input/Input'
-import { resgistrationValidate } from 'helperFunctions/validationHelper'
+import { toast } from 'react-toastify'
+
 import { handleRegisterUser } from 'helperFunctions/authHelper'
+import { resgistrationValidate } from 'helperFunctions/validationHelper'
+import Input from 'components/elements/input/Input'
+
+import 'react-toastify/dist/ReactToastify.css'
 
 const Registration = () => {
   const [registrationData, setRegistrationData] = useState({

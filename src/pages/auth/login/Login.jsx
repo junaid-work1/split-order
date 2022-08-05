@@ -1,19 +1,19 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+
+import { collection, getDocs } from 'firebase/firestore'
+import { db } from 'firestoreConfig'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import { db } from 'firestoreConfig'
-import { collection, getDocs } from 'firebase/firestore'
-
 import { loginUserHandler } from 'helperFunctions/authHelper'
-import Input from 'components/elements/input/Input'
-import { USER_COLLECTION } from 'firestoreCollections/constants'
+import { USER_COLLECTION } from 'constants/dbNames'
 import { validate } from 'helperFunctions/validationHelper'
+import Input from 'components/elements/input/Input'
 
 const Login = () => {
   const [loginData, setLoginData] = useState({ email: '', password: '' })
-  const [generic, setGeneric] = useState({ users: [], flag: false, error: {} })
+  const [login, setLogin] = useState({ users: [], flag: false, error: {} })
 
   const disptach = useDispatch()
   const nav = useNavigate()
@@ -26,7 +26,7 @@ const Login = () => {
 
   const getUser = async () => {
     const res = await getDocs(userCollection)
-    setGeneric({ ...generic, users: res.docs.map(doc => ({ ...doc.data(), id: doc.id })) })
+    setLogin({ ...login, users: res.docs.map(doc => ({ ...doc.data(), id: doc.id })) })
   }
 
   const handleChange = event => {
@@ -42,10 +42,10 @@ const Login = () => {
   const loginUser = () => {
     const user = { email: loginData.email, password: loginData.password }
     const errors = validate(loginData.email, loginData.password)
-    setGeneric({ ...generic, error: errors } || {})
+    setLogin({ ...login, error: errors } || {})
     if (errors) return
 
-    loginUserHandler(generic.users, user, setLoginData, generic, setGeneric, disptach, nav)
+    loginUserHandler(login.users, user, setLoginData, login, setLogin, disptach, nav)
   }
 
   useEffect(() => {
@@ -61,12 +61,12 @@ const Login = () => {
             name={item.name}
             handleChange={handleChange}
             value={item.value}
-            error={generic.error}
+            error={login.error}
             key={item.name}
           />
         ))}
       </div>
-      {generic.flag && (
+      {login.flag && (
         <p className='text-danger'> The email or password you entered is incorrect.</p>
       )}
       <button

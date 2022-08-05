@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+
 import { useDispatch, useSelector } from 'react-redux'
 import {
   MDBNavbar,
@@ -8,13 +9,12 @@ import {
   MDBIcon,
   MDBNavbarNav,
   MDBNavbarItem,
-  MDBNavbarLink,
   MDBNavbarToggler,
   MDBCollapse
 } from 'mdb-react-ui-kit'
 import { MDBDropdown, MDBDropdownItem, MDBDropdownMenu, MDBDropdownToggle } from 'mdbreact'
 
-import { addactiveUser } from 'redux/feature'
+import { addactiveUser } from 'redux/reducer'
 
 import './header.css'
 
@@ -59,36 +59,32 @@ const Header = () => {
           <MDBCollapse navbar show={showNavText}>
             <MDBNavbarNav className='mr-auto mb-2 mb-lg-0'>
               <MDBNavbarItem>
-                <Link to='/' className='header-links'>
-                  <MDBNavbarLink className='label' active aria-current='page'>
-                    Home
-                  </MDBNavbarLink>
+                <Link to='/' className='label header-links text-light me-2'>
+                  Home
                 </Link>
               </MDBNavbarItem>
               <MDBNavbarItem>
-                <Link to='usercard' className='header-links'>
-                  <MDBNavbarLink className='label'>Split Bill</MDBNavbarLink>
+                <Link to='usercard' className='label header-links text-light me-2'>
+                  Split Bill
                 </Link>
               </MDBNavbarItem>
               <MDBNavbarItem>
-                <Link to='totalbill' className='header-links'>
-                  <MDBNavbarLink className='label'>Total Bill</MDBNavbarLink>
+                <Link to='totalbill' className='label header-links text-light'>
+                  Total Bill
                 </Link>
               </MDBNavbarItem>
             </MDBNavbarNav>
-            <MDBNavbarLink>
-              <MDBDropdown>
-                {activeUser?.name ? activeUserName : loginTag}
-                <MDBDropdownMenu className='dropdown-default'>
-                  <Link to='profile' className='header-links'>
-                    <MDBDropdownItem>Profile</MDBDropdownItem>
-                  </Link>
-                  <Link to='login' className='header-links'>
-                    <MDBDropdownItem onClick={deleteActiveUser}>Logout</MDBDropdownItem>
-                  </Link>
-                </MDBDropdownMenu>
-              </MDBDropdown>
-            </MDBNavbarLink>
+            <MDBDropdown>
+              {activeUser?.name ? activeUserName : loginTag}
+              <MDBDropdownMenu className='dropdown-default'>
+                <Link to='profile' className='header-links'>
+                  <MDBDropdownItem>Profile</MDBDropdownItem>
+                </Link>
+                <Link to='login' className='header-links'>
+                  <MDBDropdownItem onClick={deleteActiveUser}>Logout</MDBDropdownItem>
+                </Link>
+              </MDBDropdownMenu>
+            </MDBDropdown>
           </MDBCollapse>
         </MDBContainer>
       </MDBNavbar>

@@ -1,15 +1,15 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import React from 'react'
 
+import { useSelector } from 'react-redux'
+
+import Header from 'components/header/Header'
 import Home from 'pages/home/Home'
 import Login from 'pages/auth/login/Login'
-import Registration from 'pages/auth/registration/Registration'
-import Header from 'components/header/Header'
-import UserCard from 'components/users/UserCard'
-import Profile from 'pages/profile/Profile'
-import TotalBill from 'components/total-bill/TotalBill'
-import { useSelector } from 'react-redux'
 import NoPage from 'pages/noPage/NoPage'
+import Profile from 'pages/profile/Profile'
+import Registration from 'pages/auth/registration/Registration'
+import TotalBill from 'components/total-bill/TotalBill'
+import UserCard from 'components/users/UserCard'
 
 const route = [
   { path: '/', element: <Home /> },
@@ -22,6 +22,7 @@ const route = [
 
 const AllRoutes = () => {
   const activeUser = useSelector(state => state.billSplitApp.activeUser)
+
   return (
     <div>
       <BrowserRouter>

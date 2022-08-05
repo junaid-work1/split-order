@@ -1,17 +1,17 @@
 import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { toast } from 'react-toastify'
-import { Button, Modal } from 'react-bootstrap'
 
 import { addDoc, collection } from 'firebase/firestore'
+import { Button, Modal } from 'react-bootstrap'
 import { db } from 'firestoreConfig'
+import { toast } from 'react-toastify'
+import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
 
 import { foodModalValidate } from 'helperFunctions/validationHelper'
-import { getMenus } from 'redux/feature'
-import { MENU_COLLECTION } from 'firestoreCollections/constants'
+import { getMenus } from 'redux/actions/getUserAction'
+import { MENU_COLLECTION } from 'constants/dbNames'
 
-const FoodModal = ({ handleClose, show, selectedRestaurant }) => {
+const FoodModal = ({ handleClose, selectedRestaurant, show }) => {
   const [error, setError] = useState({})
   const [menuData, setMenuData] = useState({ name: '', price: '' })
 

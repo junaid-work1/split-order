@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 
 const Input = ({ type, name, handleChange, value, error }) => (
-  <div>
+  <>
     {name}
     <input
       type={type}
@@ -12,7 +12,7 @@ const Input = ({ type, name, handleChange, value, error }) => (
       onChange={handleChange}
     />
     {error[name] && <p className='text-danger'>{error[name]}</p>}
-  </div>
+  </>
 )
 
 export default Input

@@ -1,22 +1,22 @@
 import { useState, useRef } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
-import { Button, Modal } from 'react-bootstrap'
 
+import { Button, Modal } from 'react-bootstrap'
+import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 
-import { addindividualBill } from 'redux/feature'
+import { addindividualBill } from 'redux/reducer'
 import { addDataAboutFood, individualUserBillHandler } from 'helperFunctions/userHelper'
 
 const AddUserModal = ({
+  error,
   handleClose,
   menu,
+  setError,
+  setUserData,
   show,
   singleUserData,
-  userData,
-  setUserData,
   user,
-  error,
-  setError
+  userData
 }) => {
   const [individualUser, setIndividualUser] = useState('')
   const foodItem = useRef()

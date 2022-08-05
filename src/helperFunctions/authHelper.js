@@ -1,8 +1,8 @@
 import { addDoc, collection } from 'firebase/firestore'
 import { db } from 'firestoreConfig'
 
-import { addactiveUser } from 'redux/feature'
-import { USER_COLLECTION } from 'firestoreCollections/constants'
+import { addactiveUser } from 'redux/reducer'
+import { USER_COLLECTION } from 'constants/dbNames'
 
 export const handleRegisterUser = async (
   regpassword,
@@ -31,7 +31,7 @@ export const handleRegisterUser = async (
   }
 }
 
-export const loginUserHandler = (users, user, setLoginData, generic, setGeneric, disptach, nav) => {
+export const loginUserHandler = (users, user, setLoginData, login, setLogin, disptach, nav) => {
   const [result] = users.filter(element => {
     if (element.email === user.email && element.password === user.password) {
       setLoginData({ email: '', password: '' })
@@ -48,6 +48,6 @@ export const loginUserHandler = (users, user, setLoginData, generic, setGeneric,
     nav('/profile')
   }
   if (!result) {
-    setGeneric({ ...generic, flag: true })
+    setLogin({ ...login, flag: true })
   }
 }
