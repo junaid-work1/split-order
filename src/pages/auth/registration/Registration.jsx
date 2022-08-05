@@ -1,131 +1,93 @@
-import { collection, addDoc } from 'firebase/firestore'
-import Joi from 'joi-browser'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Outlet, Link } from 'react-router-dom'
-import { ToastContainer, toast } from 'react-toastify'
+import { useNavigate } from 'react-router-dom'
+
+import { toast } from 'react-toastify'
+
+import { handleRegisterUser } from 'helperFunctions/authHelper'
+import { resgistrationValidate } from 'helperFunctions/validationHelper'
+import Input from 'components/elements/input/Input'
+
 import 'react-toastify/dist/ReactToastify.css'
 
-import { db } from 'firestoreConfig'
-import { schema } from 'validations/schemas/registrationValidation'
-
-export const userCollection = collection(db, 'users')
-export const menuCollection = collection(db, 'menu')
-export const restaurantCollection = collection(db, 'restaurant')
 const Registration = () => {
-  const [error, setError] = useState({})
-  const [flag, setFlag] = useState(false)
-  const notify = () => toast('Successfull user created!')
   const [registrationData, setRegistrationData] = useState({
     name: '',
     email: '',
     password: '',
     confirmPassword: ''
   })
+  const [flag, setFlag] = useState(false)
+  const [error, setError] = useState({})
 
-  const validate = () => {
-    const result = Joi.validate(
-      {
-        name: registrationData.name,
-        password: registrationData.password,
-        email: registrationData.email,
-        confirmPassword: registrationData.confirmPassword
-      },
-      schema,
-      {
-        abortEarly: false
-      }
-    )
-    if (result.error === null) return
+  const nav = useNavigate()
 
-    const errors = {}
+  const inputList = [
+    { value: registrationData.name, name: 'name', type: 'text' },
+    { value: registrationData.email, name: 'email', type: 'email' },
+    { value: registrationData.password, name: 'password', type: 'password' },
+    { value: registrationData.confirmPassword, name: 'confirmPassword', type: 'password' }
+  ]
 
-    for (let item of result.error.details) {
-      errors[item.path[0]] = item.message
-    }
-    return errors
-  }
+  const notify = () => toast('Successfull user created!')
 
-  const handleChange = e => {
+  resgistrationValidate(
+    registrationData.name,
+    registrationData.password,
+    registrationData.email,
+    registrationData.confirmPassword
+  )
+
+  const handleChange = event => {
+    const { name, value } = event.target
     setRegistrationData({
       ...registrationData,
-      [e.target.name]: e.target.value.trim()
+      [name]: value.trim()
     })
   }
 
   const registerUser = async () => {
-    const user = { ...registrationData, isAdmin: Boolean(false) }
-    const errors = validate()
+    const { name, email, password } = registrationData
+    const user = { name, email, password, isAdmin: Boolean(false) }
+    const errors = resgistrationValidate(
+      registrationData.name,
+      registrationData.password,
+      registrationData.email,
+      registrationData.confirmPassword
+    )
     setError(errors || {})
     if (errors) return
-    if (registrationData.password === registrationData.confirmPassword) {
-      await addDoc(userCollection, user)
-      setRegistrationData({
-        name: '',
-        email: '',
-        password: '',
-        confirmPassword: ''
-      })
-      notify()
-      setFlag(false)
-    } else {
-      setFlag(true)
-    }
+
+    handleRegisterUser(
+      registrationData.password,
+      registrationData.confirmPassword,
+      user,
+      setFlag,
+      setRegistrationData,
+      notify,
+      nav
+    )
   }
 
   return (
     <div className='row'>
       <div className='mt-5 p-5 mt-5 p-5 col-lg-4 col-md-6 col-sm-7 container shadow-lg bg-body rounded'>
         <div className='form-outline mb-4'>
-          <label className='form-label'>Name</label>
-          <input
-            type='email'
-            className='form-control '
-            name='name'
-            value={registrationData.name}
-            onChange={handleChange}
-          />
-          {error.name && <p className='text-danger'>{error.name}</p>}
-        </div>
-        <div className='form-outline mb-4'>
-          <label className='form-label'>Email address</label>
-          <input
-            type='email'
-            className='form-control'
-            name='email'
-            value={registrationData.email}
-            onChange={handleChange}
-          />
-          {error.email && <p className='text-danger'>{error.email}</p>}
-        </div>
-
-        <div className='form-outline mb-4'>
-          <label className='form-label'>Password</label>
-          <input
-            type='password'
-            className='form-control'
-            name='password'
-            value={registrationData.password}
-            onChange={handleChange}
-          />
-          {error.password && <p className='text-danger'>{error.password}</p>}
-        </div>
-
-        <div className='form-outline mb-4'>
-          <label className='form-label'>Confirm Password</label>
-          <input
-            type='password'
-            className='form-control'
-            name='confirmPassword'
-            value={registrationData.confirmPassword}
-            onChange={handleChange}
-          />
-          {error.confirmPassword && <p className='text-danger'>{error.confirmPassword}</p>}
+          {inputList.map(item => (
+            <Input
+              type={item.type}
+              name={item.name}
+              handleChange={handleChange}
+              value={item.value}
+              error={error}
+              key={item.name}
+            />
+          ))}
           {flag && <p className='text-danger'> Please make sure your passwords match</p>}
         </div>
-
         <button
           type='button'
-          className='btn btn-primary btn-block mb-4'
+          className='btn btn-success btn-block mb-4'
           onClick={() => {
             registerUser()
           }}
@@ -139,7 +101,6 @@ const Registration = () => {
           </p>
         </div>
         <Outlet />
-        <ToastContainer />
       </div>
     </div>
   )
